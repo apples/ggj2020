@@ -1,6 +1,6 @@
 import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer } from "./initializers";
 import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem } from "./coresystems";
-import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera } from "three";
+import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler } from "three";
 import { playAudio, setHitBoxGraphic } from "./helpers";
 import { SequenceTypes, HitBoxType } from "./enums";
 import { controlSystem } from "./controlsystem";
@@ -17,11 +17,15 @@ import { renderGameUi, Root } from "./rootgameui";
  */
 
 export class GameState extends BaseState {
+    public readonly viewWidth = 1280;
+    public readonly viewHeight = 720;
+
     public gameScene: Scene;
     public gameCamera: Camera;
     public uiScene: Scene;
     public uiCamera: Camera;
     public rootWidget: Widget;
+    public playerEntity: Entity;
     constructor(stateStack: BaseState[]) {
         super(stateStack);
         // Set up game scene.
@@ -29,7 +33,7 @@ export class GameState extends BaseState {
         this.gameScene.background = new Color("#FFFFFF");
 
         // Set up game camera.
-        this.gameCamera = new OrthographicCamera(0, 1280, 720, 0, -1000, 1000);
+        this.gameCamera = new OrthographicCamera(0, this.viewWidth, this.viewHeight, 0, -1000, 1000);
 
         // Set up ui scene.
         this.uiScene = new Scene();
@@ -56,6 +60,7 @@ export class GameState extends BaseState {
 
         // Set up player entity.
         let player = new Entity();
+        this.playerEntity = player;
         player.pos = initializePosition(150, 150, 5);
         player.sprite = initializeSprite("./data/textures/msknight.png", this.gameScene, 1);
         player.control = initializeControls();
@@ -108,6 +113,10 @@ export class GameState extends BaseState {
     }
 
     public render(renderer: WebGLRenderer) : void {
+        this.gameCamera.position.copy(this.playerEntity.pos.loc);
+        this.gameCamera.position.x -= this.viewWidth/2;
+        this.gameCamera.position.y -= this.viewHeight/2;
+
         renderer.clear();
         renderer.render(this.gameScene, this.gameCamera);
         renderer.clearDepth();
