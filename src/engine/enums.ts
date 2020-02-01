@@ -3,9 +3,10 @@
  * as long as they are properly set in HitBox "collidesWith" property
  * and HurtBox "type" property.
  */
-export const enum HurtBoxTypes {
-    test,
-    // ..
+export const enum HitBoxType {
+    PLAYER,
+    ASTEROID,
+    BULLET
 }
 
 /**

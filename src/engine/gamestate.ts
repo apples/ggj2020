@@ -1,8 +1,8 @@
-import { initializeAnimation, initializeControls, initializeHitBox, initializeHurtBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer } from "./initializers";
+import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer } from "./initializers";
 import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem } from "./coresystems";
 import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera } from "three";
-import { setHurtBoxGraphic, playAudio, setHitBoxGraphic } from "./helpers";
-import { HurtBoxTypes, SequenceTypes } from "./enums";
+import { playAudio, setHitBoxGraphic } from "./helpers";
+import { SequenceTypes, HitBoxType } from "./enums";
 import { controlSystem } from "./controlsystem";
 import { Entity } from "./entity";
 import { playerAnim } from "../../data/animations/player";
@@ -62,21 +62,21 @@ export class GameState extends BaseState {
         player.vel = initializeVelocity(1);
         player.vel.friction = 0.9;
         player.anim = initializeAnimation(SequenceTypes.walk, playerAnim);
-        player.hurtBox = initializeHurtBox(player.sprite, HurtBoxTypes.test, 50, 50, -300, -100);
+        player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [], 50, 50, -300, -100);
         player.timer = initializeTimer(250, () => {
             // this.removeEntity(player);
             // Remove player sprite from scene.
             // this.gameScene.remove(player.sprite);
             // this.stateStack.pop();
         });
-        setHurtBoxGraphic(player.sprite, player.hurtBox);
+        setHitBoxGraphic(player.sprite, player.hitBox);
         this.registerEntity(player);
 
         // Set up enemy entity.
         let enemy = new Entity();
         enemy.pos = initializePosition(300, 100, 4);
         enemy.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
-        enemy.hitBox = initializeHitBox(enemy.sprite, [HurtBoxTypes.test], 50, 50, 100, 200);
+        enemy.hitBox = initializeHitBox(enemy.sprite, HitBoxType.ASTEROID, [HitBoxType.PLAYER], 50, 50, 100, 200);
         setHitBoxGraphic(enemy.sprite, enemy.hitBox);
         enemy.hitBox.onHit = function() {
             console.log("ouch!");

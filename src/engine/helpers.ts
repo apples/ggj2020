@@ -3,9 +3,8 @@ import {
     MeshBasicMaterial,
     PlaneGeometry,
 } from "three";
-import { 
+import {
     AnimationComponent,
-    HurtBoxComponent,
     HitBoxComponent,
 } from "./corecomponents";
 import { Resources } from "../resourcemanager";
@@ -39,32 +38,17 @@ export function playAudio(url: string, volume?: number, loop?: boolean) : void {
 
 /**
  * Helper for swapping out an animation sequence.
- * @param sequence 
- * @param anim 
- * @param frame 
+ * @param sequence
+ * @param anim
+ * @param frame
  */
 export function changeSequence(sequence: SequenceTypes, anim: AnimationComponent, frame: number = 0) : AnimationComponent {
     if (anim.sequence !== sequence) {
         anim.sequence = sequence;
         anim.frame = frame;
     }
-    
-    return anim;
-}
 
-/**
- * Helper to set visuals for a hurtBox.
- * Used for testing hit collision assumptions.
- * @param entMesh
- * @param hurtBox
- */
-export function setHurtBoxGraphic(entMesh: Mesh, hurtBox: HurtBoxComponent) : void {
-    const hurtBoxGeometry = new PlaneGeometry(hurtBox.width, hurtBox.height);
-    const hurtBoxMaterial = new MeshBasicMaterial({ color: "#228B22" });
-    const hurtBoxMesh = new Mesh(hurtBoxGeometry, hurtBoxMaterial);
-    hurtBoxMesh.position.x += hurtBox.offsetX;
-    hurtBoxMesh.position.y += hurtBox.offsetY;
-    entMesh.add(hurtBoxMesh);
+    return anim;
 }
 
 /**
@@ -84,16 +68,16 @@ export function setHitBoxGraphic(entMesh: Mesh, hitBox: HitBoxComponent) : void 
 
 /**
  * Clears all rendered elements from container and it's children.
- * @param baseContainer 
+ * @param baseContainer
  */
 // export function clearStage(baseContainer: PIXI.Container) {
 //     baseContainer.destroy({children:true, texture:true, baseTexture:true});
 // }
 
 /**
- * 
+ *
  * @param array generic array
- * 
+ *
  * Helper function that returns the last element of the array.
  * Returns ``undefined`` if the array's length is zero.
  */

@@ -8,14 +8,13 @@ import {
     MeshBasicMaterial,
     Vector3,
 } from "three";
-import { 
-    HurtBoxTypes,
+import {
+    HitBoxType,
     SequenceTypes,
 } from "./enums";
 import {
     AnimationComponent,
     HitBoxComponent,
-    HurtBoxComponent,
     PositionComponent,
     VelocityComponent,
     TimerComponent,
@@ -26,8 +25,8 @@ import { AnimationSchema } from "./engineinterfaces";
 
 /**
  * Helper for intializing an entity's animation blob and starting sequence.
- * @param startingSequence 
- * @param animBlob 
+ * @param startingSequence
+ * @param animBlob
  */
 export function initializeAnimation(startingSequence: SequenceTypes, animBlob: AnimationSchema) : AnimationComponent {
     return {
@@ -59,16 +58,17 @@ export function initializeControls(): ControlComponent {
  * Helper for initializing an entity's hit box component.
  * Note: ``onHit`` callback should be set independently.
  * @param entMesh An entity's mesh A.K.A. sprite to be set before calling this function.
- * @param collidesWith List of HurtBox types the HitBox can collide with.
- * @param heightOverride (Optional) Exact number of pixels to set for the hurtBox's height.
+ * @param collideType This entity's HitBox type.
+ * @param collidesWith List of HitBox types the HitBox can collide with.
+ * @param heightOverride (Optional) Exact number of pixels to set for the hitBox's height.
  * Must also set ``widthOverride`` for this to take effect.
- * @param widthOverride (Optional) Exact number of pixels to set for the hurtBox's width.
+ * @param widthOverride (Optional) Exact number of pixels to set for the hitBox's width.
  * Must also set ``heightOverride`` for this to take effect.
- * @param offsetX (Default 0) Number of pixels to offset the hurtbox's x position.
- * @param offsetY (Default 0) Number of pixels to offset the hurtbox's y position.
+ * @param offsetX (Default 0) Number of pixels to offset the hitbox's x position.
+ * @param offsetY (Default 0) Number of pixels to offset the hitbox's y position.
  */
-export function initializeHitBox(entMesh: Mesh, collidesWith: HurtBoxTypes[], heightOverride?: number, widthOverride?: number, offsetX: number = 0, offsetY: number = 0) : HitBoxComponent {
-    let hitBox: HitBoxComponent = { collidesWith: collidesWith, height: 0, width: 0, offsetX: offsetX, offsetY: offsetY };
+export function initializeHitBox(entMesh: Mesh, collideType: HitBoxType, collidesWith: HitBoxType[], heightOverride?: number, widthOverride?: number, offsetX: number = 0, offsetY: number = 0) : HitBoxComponent {
+    let hitBox: HitBoxComponent = { collideType: collideType, collidesWith: collidesWith, height: 0, width: 0, offsetX: offsetX, offsetY: offsetY };
 
     if (heightOverride && widthOverride) {
         if (heightOverride <= 0 || widthOverride <= 0)
@@ -87,41 +87,10 @@ export function initializeHitBox(entMesh: Mesh, collidesWith: HurtBoxTypes[], he
 }
 
 /**
- * Helper for initializing an entity's hurt box component.
- * Note: ``onHurt`` callback should be set independently.
- * @param entMesh An entity's mesh A.K.A. sprite to be set before calling this function.
- * @param hurtType HurtBox type.
- * @param heightOverride (Optional) Exact number of pixels to set for the hurtBox's height.
- * Must also set ``widthOverride`` for this to take effect.
- * @param widthOverride (Optional) Exact number of pixels to set for the hurtBox's width.
- * Must also set ``heightOverride`` for this to take effect.
- * @param offsetX (Default 0) Number of pixels to offset the hurtbox's x position.
- * @param offsetY (Default 0) Number of pixels to offset the hurtbox's y position.
- */
-export function initializeHurtBox(entMesh: Mesh, hurtType: HurtBoxTypes, heightOverride?: number, widthOverride?: number, offsetX: number = 0, offsetY: number = 0) : HurtBoxComponent {
-    let hurtBox: HurtBoxComponent = { type: hurtType, height: 0, width: 0, offsetX: offsetX, offsetY: offsetY };
-
-    if (heightOverride && widthOverride) {
-        if (heightOverride <= 0 || widthOverride <= 0)
-            throw Error("overrides can't be less than or equal to 0.");
-        hurtBox.height = heightOverride;
-        hurtBox.width = widthOverride;
-    }
-    else {
-        const boundingBox = new Box3().setFromObject(entMesh);
-
-        hurtBox.height = boundingBox.max.y - boundingBox.min.y;
-        hurtBox.width =  boundingBox.max.x - boundingBox.min.x;
-    }
-
-    return hurtBox;
-}
-
-/**
  * Helper for initializing an entity's position.
- * @param xPos 
- * @param yPos 
- * @param zPos 
+ * @param xPos
+ * @param yPos
+ * @param zPos
  * @param startingDirection optional param. If not specified, direction will be: Vector3(1, 0, 0).
  */
 export function initializePosition(xPos: number, yPos: number, zPos: number, startingDirection?: Vector3): PositionComponent {
@@ -133,7 +102,7 @@ export function initializePosition(xPos: number, yPos: number, zPos: number, sta
     else {
         position.dir = new Vector3(1, 0, 0);
     }
-      
+
     return position;
 }
 
@@ -147,7 +116,7 @@ export function initializeSprite(url: string, scene: Scene, pixelRatio?: number)
     if (!pixelRatio) {
         pixelRatio = 1;
     }
-    
+
     // get texture from cached resources
     let spriteMap = Resources.instance.getTexture(url);
     // load geometry (consider caching these as well)
@@ -163,8 +132,8 @@ export function initializeSprite(url: string, scene: Scene, pixelRatio?: number)
 
 /**
  * Helper to initialize timer component for an entity.
- * @param ticksUntilTimeout 
- * @param ontimeout 
+ * @param ticksUntilTimeout
+ * @param ontimeout
  */
 export function initializeTimer(ticksUntilTimeout: number, ontimeout: () => void): TimerComponent {
     return { ticks: ticksUntilTimeout, ontimeout: ontimeout };
@@ -172,13 +141,13 @@ export function initializeTimer(ticksUntilTimeout: number, ontimeout: () => void
 
 /**
  * Helper to intialize velocity component for any entity.
- * @param acceleration 
- * @param positionalVel 
- * @param rotationalVel 
- * @param friction 
+ * @param acceleration
+ * @param positionalVel
+ * @param rotationalVel
+ * @param friction
  */
 export function initializeVelocity(acceleration: number, positionalVel?: Vector3, rotationalVel?: Euler, friction?: number): VelocityComponent {
-    let velocity: VelocityComponent = { 
+    let velocity: VelocityComponent = {
         acceleration: acceleration,
         positional: null,
         rotational: null,

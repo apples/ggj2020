@@ -4,7 +4,8 @@ import {
 } from "three";
 import { Entity } from "./entity";
 import { AnimationSchema } from "./engineinterfaces";
-import { HurtBoxTypes, SequenceTypes } from "./enums";
+import { HitBoxType, SequenceTypes } from "./enums";
+import { Manifold } from "./commontypes";
 
 /**
  * Position component.
@@ -31,27 +32,13 @@ export interface VelocityComponent {
  * any of the "collidesWith" enum entries, entity will "hit" them.
  */
 export interface HitBoxComponent {
-    // collideType: Collidables;
-    collidesWith: HurtBoxTypes[];
+    collideType: HitBoxType;
+    collidesWith: HitBoxType[];
     height: number;
     width: number;
     offsetX: number;
     offsetY: number;
-    onHit?: (hittingEnt: Entity, hurtingEnt: Entity) => void;
-}
-
-/**
- * HurtBox Component that represents the area that when colliding with
- * any of the "collidesWith" enum entries, entity will "hurt" them.
- */
-export interface HurtBoxComponent {
-    type: HurtBoxTypes;
-    // collidesWith: Collidables[];
-    height: number;
-    width: number;
-    offsetX: number;
-    offsetY: number;
-    onHurt?: (hurtingEnt: Entity, hittingEnt: Entity) => void;
+    onHit?: (self: Entity, other: Entity, manifold: Manifold) => void;
 }
 
 /**
