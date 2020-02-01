@@ -7,6 +7,13 @@ import { Resources } from "../resourcemanager";
 import { Rect, Manifold } from "./commontypes";
 
 /**
+ * Animation System
+ * Collision System
+ * Position System
+ * Timer System
+ */
+
+/**
  * Rudimentary velocity implementation... will replace directions with
  * angle and magnitude later on
  */

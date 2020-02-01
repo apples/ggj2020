@@ -1,4 +1,8 @@
 /**
+ * Enums
+ */
+
+/**
  * Enum for all possible types of HurtBoxes. Naming is arbitrary
  * as long as they are properly set in HitBox "collidesWith" property
  * and HurtBox "type" property.
@@ -6,7 +10,9 @@
 export const enum HitBoxType {
     PLAYER,
     ASTEROID,
-    BULLET
+    BULLET,
+    STATION,
+    STATION_PART
 }
 
 /**

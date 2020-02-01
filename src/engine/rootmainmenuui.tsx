@@ -6,6 +6,10 @@ import { Scene } from "THREE";
 import { Widget } from "../ui/widget";
 import { Component } from "../ui/component";
 
+/**
+ * Main Menu UI objects
+ */
+
 export function renderMainMenuUi(scene: Scene, rootWidget: Widget, startGame: () => void): MainMenuRoot {
     let rootInstance = renderWidget(<MainMenuRoot startGame = {startGame} />, rootWidget, scene);
 
@@ -26,23 +30,23 @@ export class MainMenuRoot extends Component<Props, State> {
     constructor(props: Props, scene: Scene) {
         super(props, scene);
         this.state = {
-            panelColor: "#228B22",
-            fontColor: "#0000FF",
+            panelColor: "#1f22dc", // Start button color
+            fontColor: "#C9CFFF", // Start text color
             start: false,
         }
     }
 
     public hover = (): void => {
         this.setState({
-            fontColor: "#FF0000",
-            panelColor: "#00FFFF"
+            panelColor: "#3439FF", // Hover button color
+            fontColor: "#ffffff" // Hover text color
         });
     }
 
     public plunge = (): void => {
         this.setState({
-            fontColor: "#0000FF",
-            panelColor: "#228B22"
+            panelColor: "#1f22dc", // Idle button color
+            fontColor: "#C9CFFF" // Idle text color
         });
     }
 
@@ -52,12 +56,24 @@ export class MainMenuRoot extends Component<Props, State> {
 
     render(): JSXElement {
         return(
-            <panel height="70" width="300" color={this.state.panelColor} top="360" left="640"
-                onHover={() => this.hover()}
-                onPlunge={() => this.plunge()}
-                onClick={() => this.triggerStartGame()}>
-                <label top="10" color={this.state.fontColor} contents="start"></label>
-            </panel>
+            <div>
+                <panel 
+                    z_index="-1" width="1280" height="720" color="#282828" img="./data/textures/space4096Square.png" 
+                    left="640" top="390"
+                />
+                <panel height="120" /*color="red"*/ width="600" top="200" left="640">
+                    <label top="50" color="C9CFFF" font_size="100" contents="Asteroid"></label>
+                </panel>
+                <panel height="120" /*color="red"*/ width="800" top="400" left="640">
+                    <label top="50" color="C9CFFF" font_size="100" contents="Terminators"></label>
+                </panel>
+                <panel height="70" width="300" color={this.state.panelColor} top="600" left="640"
+                    onHover={() => this.hover()}
+                    onPlunge={() => this.plunge()}
+                    onClick={() => this.triggerStartGame()}>
+                    <label top="10" color={this.state.fontColor} contents="START"></label>
+                </panel>
+            </div>
         )
     }
 }

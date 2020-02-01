@@ -8,6 +8,15 @@ import { HitBoxType, SequenceTypes } from "./enums";
 import { Manifold } from "./commontypes";
 
 /**
+ * Position component
+ * Velocity component
+ * Hitbox component
+ * Hurtbox component
+ * Animation component
+ * Timeout timer
+ */
+
+/**
  * Position component.
  */
 export interface PositionComponent {
