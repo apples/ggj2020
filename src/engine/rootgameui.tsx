@@ -34,7 +34,7 @@ export class Root extends Component<Props, State> {
     constructor(props: Props, scene: Scene) {
         super(props, scene);
         this.state = {
-            ticks: 50,
+            ticks: 0,
             clicks: 0,
             color: "#00FFFF",
             hidden: false,
