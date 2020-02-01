@@ -84,8 +84,8 @@ export class GameState extends BaseState {
         // Set up space station central hub entity.
         let station = new Entity();
         station.pos = initializePosition(640, 360, 4);
-        station.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 10);
-        station.hitBox = initializeHitBox(station.sprite, HitBoxType.STATION, [HitBoxType.ASTEROID], 0, 0, 0, 0);
+        station.sprite = initializeSprite("./data/textures/base3MiddleLarge.png", this.gameScene, 3.5);
+        station.hitBox = initializeHitBox(station.sprite, HitBoxType.STATION, [HitBoxType.ASTEROID], 130, 130, 0, 0);
         setHitBoxGraphic(station.sprite, station.hitBox);
         station.hitBox.onHit = function() {
             rootComponent.addClick();
@@ -119,8 +119,8 @@ export class GameState extends BaseState {
             let ring = new Entity();
             ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
             ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 3.5);
-            ring.hitBox = initializeHitBox(ring.sprite, [HurtBoxTypes.test]); // TODO make center smaller than sprite
-            //setHitBoxGraphic(ring.sprite, ring.hitBox);
+            ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID]); // TODO make center smaller than sprite
+            setHitBoxGraphic(ring.sprite, ring.hitBox);
             ring.hitBox.onHit = function() {
                 rootComponent.addClick();
                 // TODO // Make this decrease base health + chip off a chunk of armor
