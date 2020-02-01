@@ -95,6 +95,12 @@ export class GameState extends BaseState {
             rootComponent.addClick();
         }
         this.registerEntity(enemy2);
+
+        // Set up background element
+        let stars = new Entity();
+        stars.pos = initializePosition(0, 0, 1);
+        stars.sprite = initializeSprite("./data/textures/space4096Square.png", this.gameScene, 2);
+        this.registerEntity(stars);
     }
 
     public update() : void {
