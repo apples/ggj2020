@@ -18,7 +18,7 @@ export class MainMenuState extends BaseState {
 
         // Set up ui scene.
         this.uiScene = new Scene();
-        this.uiScene.background = new Color("#000000");
+        this.uiScene.background = new Color("#2A2A2A");
 
         // Set up ui camera.
         this.uiCamera = new OrthographicCamera(0, 1280, 0, -720, -1000, 1000);
@@ -26,6 +26,7 @@ export class MainMenuState extends BaseState {
         // Set up ui widget and instance.
         this.rootWidget = createWidget("root");
         this.uiScene.add(this.rootWidget);
+
         //let rootComponent =
         renderMainMenuUi(this.uiScene, this.rootWidget, this.startGame);
         (window as any).scene = this.uiScene;

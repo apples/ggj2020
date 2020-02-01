@@ -82,8 +82,19 @@ export class GameState extends BaseState {
             console.log("ouch!");
             rootComponent.addClick();
         }
-
         this.registerEntity(enemy);
+
+        // Set up enemy entity.
+        let enemy2 = new Entity();
+        enemy2.pos = initializePosition(400, 200, 4);
+        enemy2.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
+        enemy2.hitBox = initializeHitBox(enemy2.sprite, [HurtBoxTypes.test], 50, 50, 100, 200);
+        setHitBoxGraphic(enemy2.sprite, enemy2.hitBox);
+        enemy2.hitBox.onHit = function() {
+            console.log("ouch!");
+            rootComponent.addClick();
+        }
+        this.registerEntity(enemy2);
     }
 
     public update() : void {
