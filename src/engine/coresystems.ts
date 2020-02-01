@@ -4,6 +4,7 @@ import {
 } from "three";
 import { Entity } from "./entity";
 import { Resources } from "../resourcemanager";
+import { Rect, Manifold } from "./commontypes";
 
 /**
  * Animation System
@@ -17,7 +18,7 @@ import { Resources } from "../resourcemanager";
  * angle and magnitude later on
  */
 export function velocitySystem(ents: ReadonlyArray<Entity>) : void {
-    ents.forEach(ent => { 
+    ents.forEach(ent => {
         if (ent.vel && ent.pos) {
             if (ent.vel.friction) {
                 ent.vel.positional.multiplyScalar(ent.vel.friction);
@@ -54,28 +55,62 @@ export function animationSystem(ents: ReadonlyArray<Entity>) : void {
  * Hurting ents must have hurtBox and pos components.
  */
 export function collisionSystem(ents: ReadonlyArray<Entity>) {
-    ents.forEach(hittingEnt => {
-        if (hittingEnt.hitBox && hittingEnt.pos) {
-            ents.forEach(hurtingEnt => {
-                if (hurtingEnt.hurtBox && hurtingEnt.pos) {
-                    if (hittingEnt.hitBox.collidesWith.indexOf(hurtingEnt.hurtBox.type) > -1) {
-                        if (hittingEnt.pos.loc.x + hittingEnt.hitBox.offsetX - hittingEnt.hitBox.width/2 < hurtingEnt.pos.loc.x + hurtingEnt.hurtBox.offsetX + hurtingEnt.hurtBox.width/2 &&
-                            hittingEnt.pos.loc.x + hittingEnt.hitBox.offsetX + hittingEnt.hitBox.width/2 > hurtingEnt.pos.loc.x + hurtingEnt.hurtBox.offsetX - hurtingEnt.hurtBox.width/2 &&
-                            hittingEnt.pos.loc.y + hittingEnt.hitBox.offsetY - hittingEnt.hitBox.height/2 < hurtingEnt.pos.loc.y + hurtingEnt.hurtBox.offsetY + hurtingEnt.hurtBox.height/2 &&
-                            hittingEnt.pos.loc.y + hittingEnt.hitBox.offsetY + hittingEnt.hitBox.height/2 > hurtingEnt.pos.loc.y + hurtingEnt.hurtBox.offsetY - hurtingEnt.hurtBox.height/2) {
-                            if (hittingEnt.hitBox.onHit) {
-                                hittingEnt.hitBox.onHit(hittingEnt, hurtingEnt);
-                            }
+    type Body = {
+        ent: Entity;
+        rect: Rect;
+    };
 
-                            if (hurtingEnt.hurtBox.onHurt) {
-                                hurtingEnt.hurtBox.onHurt(hurtingEnt, hittingEnt);
-                            }
-                        }
-                    }
-                }
-            });
-        }
+    const getHitbox = (e: Entity): Rect => ({
+        left: e.pos.loc.x + e.hitBox.offsetX - e.hitBox.width/2,
+        right: e.pos.loc.x + e.hitBox.offsetX + e.hitBox.width/2,
+        bottom: e.pos.loc.y + e.hitBox.offsetY - e.hitBox.height/2,
+        top: e.pos.loc.y + e.hitBox.offsetY + e.hitBox.height/2,
     });
+
+    const getManifold = (a: Rect, b: Rect): Manifold => {
+        const rect = {
+            left: Math.max(a.left, b.left),
+            right: Math.min(a.right, b.right),
+            bottom: Math.max(a.bottom, b.bottom),
+            top: Math.min(a.top, b.top),
+        };
+
+        return {
+            ...rect,
+            width: rect.right - rect.left,
+            height: rect.top - rect.bottom,
+        };
+    };
+
+    const tryOnHit = (a: Entity, b: Entity, m: Manifold) => {
+        if (a.hitBox.onHit && a.hitBox.collidesWith.includes(b.hitBox.collideType)) {
+            a.hitBox.onHit(a, b, m);
+        }
+    };
+
+    const allBodies = ents
+        .filter(e => e.hitBox && e.pos)
+        .map((e): Body => ({ ent: e, rect: getHitbox(e) }));
+
+    allBodies.sort((a, b) => a.rect.left - b.rect.left);
+
+    let bodyWindow = [] as Body[];
+
+    for (const body of allBodies) {
+        bodyWindow = bodyWindow.filter(otherBody => body.rect.left <= otherBody.rect.right);
+
+        for (const otherBody of bodyWindow) {
+            const manifold = getManifold(body.rect, otherBody.rect);
+
+            if (manifold.width > 0 && manifold.height > 0) {
+                console.log('hit');
+                tryOnHit(body.ent, otherBody.ent, manifold);
+                tryOnHit(otherBody.ent, body.ent, manifold);
+            }
+        }
+
+        bodyWindow.push(body);
+    }
 }
 
 /**
@@ -93,7 +128,7 @@ export function positionSystem(ents: ReadonlyArray<Entity>) {
 
 /**
  * Timer system.
- * @param ents 
+ * @param ents
  */
 export function timerSystem(ents: ReadonlyArray<Entity>) {
     ents.forEach(ent => {

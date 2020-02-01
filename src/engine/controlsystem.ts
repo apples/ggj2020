@@ -1,6 +1,6 @@
 import { Entity } from "./entity";
 import { changeSequence } from "./helpers";
-import { HurtBoxTypes, SequenceTypes } from "./enums";
+import { SequenceTypes } from "./enums";
 import { Vector3 } from "three";
 
 /**
@@ -46,10 +46,10 @@ export function controlSystem(ents: ReadonlyArray<Entity>){
                 // attack.timer = { ticks: 15 };
                 attack.pos.loc = ent.pos.loc;//x: ent.pos.x + 100, y: ent.pos.y + 50, z: 5};
                 // attack.graphic = setHitBoxGraphic(stage, 50, 50);
-                // attack.hitBox = { 
-                //     collidesWith: [HurtBoxTypes.test], 
-                //     height: 50, 
-                //     width: 50, 
+                // attack.hitBox = {
+                //     collidesWith: [HurtBoxTypes.test],
+                //     height: 50,
+                //     width: 50,
                 //     onHit: function() { console.log("hit")
                 // }};
                 //ents.push(attack);
