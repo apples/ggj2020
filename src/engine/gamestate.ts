@@ -57,44 +57,44 @@ export class GameState extends BaseState {
         // Set up player entity.
         let player = new Entity();
         player.pos = initializePosition(150, 150, 5);
-        player.sprite = initializeSprite("./data/textures/msknight.png", this.gameScene, 4);
+        player.sprite = initializeSprite("./data/textures/msknight.png", this.gameScene, 1);
         player.control = initializeControls();
         player.vel = initializeVelocity(1);
         player.vel.friction = 0.9;
         player.anim = initializeAnimation(SequenceTypes.walk, playerAnim);
-        player.hurtBox = initializeHurtBox(player.sprite, HurtBoxTypes.test, 50, 50, -300, -100);
         player.timer = initializeTimer(250, () => {
             // this.removeEntity(player);
             // Remove player sprite from scene.
             // this.gameScene.remove(player.sprite);
             // this.stateStack.pop();
         });
-        setHurtBoxGraphic(player.sprite, player.hurtBox);
+        player.hitBox = initializeHitBox(player.sprite, [HurtBoxTypes.test], 0, 0, 0, 0);
+        setHitBoxGraphic(player.sprite, player.hitBox);
+        player.hitBox.onHit = function() {
+            rootComponent.addClick();
+            // TODO // Make this decrease player health
+        }
         this.registerEntity(player);
 
-        // Set up enemy entity.
-        let enemy = new Entity();
-        enemy.pos = initializePosition(300, 100, 4);
-        enemy.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
-        enemy.hitBox = initializeHitBox(enemy.sprite, [HurtBoxTypes.test], 50, 50, 100, 200);
-        setHitBoxGraphic(enemy.sprite, enemy.hitBox);
-        enemy.hitBox.onHit = function() {
-            console.log("ouch!");
+        // Set up space station entity.
+        let station = new Entity();
+        station.pos = initializePosition(640, 360, 4);
+        station.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 10);
+        station.hitBox = initializeHitBox(station.sprite, [HurtBoxTypes.test], 0, 0, 0, 0);
+        setHitBoxGraphic(station.sprite, station.hitBox);
+        station.hitBox.onHit = function() {
             rootComponent.addClick();
+            // TODO // Make this decrease base health + chip off a chunk of armor
         }
-        this.registerEntity(enemy);
+        this.registerEntity(station);
 
-        // Set up enemy entity.
-        let enemy2 = new Entity();
-        enemy2.pos = initializePosition(400, 200, 4);
-        enemy2.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
-        enemy2.hitBox = initializeHitBox(enemy2.sprite, [HurtBoxTypes.test], 50, 50, 100, 200);
-        setHitBoxGraphic(enemy2.sprite, enemy2.hitBox);
-        enemy2.hitBox.onHit = function() {
-            console.log("ouch!");
-            rootComponent.addClick();
-        }
-        this.registerEntity(enemy2);
+        // Set up asteroid entity.
+        let asteroid = new Entity();
+        asteroid.pos = initializePosition(120, 620, 4);
+        asteroid.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
+        asteroid.hurtBox = initializeHurtBox(asteroid.sprite, HurtBoxTypes.test, 0, 0, 0, 0);
+        setHurtBoxGraphic(asteroid.sprite, asteroid.hurtBox);
+        this.registerEntity(asteroid);
 
         // Set up background element
         let stars = new Entity();
