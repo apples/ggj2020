@@ -1,0 +1,21 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow: hidden;
+}
+
+.pointer {
+    cursor: pointer !important;
+}
+
+.default {
+    cursor: default !important;
+}
+
+#canvasContainer {
+    height: 0;
+    /* display: block; */
+}
