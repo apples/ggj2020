@@ -1,6 +1,6 @@
 import { initializeAnimation, initializeControls, initializeHitBox, initializeHurtBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer } from "./initializers";
 import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem } from "./coresystems";
-import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera } from "three";
+import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler } from "three";
 import { setHurtBoxGraphic, playAudio, setHitBoxGraphic } from "./helpers";
 import { HurtBoxTypes, SequenceTypes } from "./enums";
 import { controlSystem } from "./controlsystem";
@@ -76,17 +76,53 @@ export class GameState extends BaseState {
         }
         this.registerEntity(player);
 
-        // Set up space station entity.
+        // Set up space station central hub entity.
         let station = new Entity();
         station.pos = initializePosition(640, 360, 4);
-        station.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 10);
-        station.hitBox = initializeHitBox(station.sprite, [HurtBoxTypes.test], 0, 0, 0, 0);
-        setHitBoxGraphic(station.sprite, station.hitBox);
+        station.sprite = initializeSprite("./data/textures/base3MiddleLarge.png", this.gameScene, 3.5);
+        station.hitBox = initializeHitBox(station.sprite, [HurtBoxTypes.test], 130, 130, 0, 0); // TODO make center smaller than sprite
+        //setHitBoxGraphic(station.sprite, station.hitBox);
         station.hitBox.onHit = function() {
             rootComponent.addClick();
             // TODO // Make this decrease base health + chip off a chunk of armor
         }
         this.registerEntity(station);
+
+        let offset = 116;
+        let ringEntities = [
+            // {x: 440, y: 160, sprite: "base3Corner.png", rotation: new Vector3(-1,0,0)},
+            // {x: 440, y: 360, sprite: "base3Side.png", rotation: new Vector3(-1,0,0)},
+            // {x: 440, y: 560, sprite: "base3Corner.png", rotation: new Vector3(0,1,0)},
+            // {x: 640, y: 160, sprite: "base3Side.png", rotation: new Vector3(0,-1,0)},
+            // {x: 640, y: 560, sprite: "base3Side.png", rotation: new Vector3(0,1,0)},
+            // {x: 840, y: 160, sprite: "base3Corner.png", rotation: new Vector3(0,-1,0)},
+            // {x: 840, y: 360, sprite: "base3Side.png", rotation: new Vector3(1,0,0)},
+            // {x: 840, y: 560, sprite: "base3Corner.png", rotation: new Vector3(1,0,0)},
+
+            {x: 440+offset, y: 160+offset, sprite: "base3Corner.png", rotation: new Vector3(-1,0,0)},
+            {x: 440+offset, y: 360, sprite: "base3Side.png", rotation: new Vector3(-1,0,0)},
+            {x: 440+offset, y: 560-offset, sprite: "base3Corner.png", rotation: new Vector3(0,1,0)},
+            {x: 640, y: 160+offset, sprite: "base3Side.png", rotation: new Vector3(0,-1,0)},
+            {x: 640, y: 560-offset, sprite: "base3Side.png", rotation: new Vector3(0,1,0)},
+            {x: 840-offset, y: 160+offset, sprite: "base3Corner.png", rotation: new Vector3(0,-1,0)},
+            {x: 840-offset, y: 360, sprite: "base3Side.png", rotation: new Vector3(1,0,0)},
+            {x: 840-offset, y: 560-offset, sprite: "base3Corner.png", rotation: new Vector3(1,0,0)},
+        ]
+
+        // Set up station ring piece entities.
+        ringEntities.forEach((entity) => {
+            let ring = new Entity();
+            ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
+            ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 3.5);
+            ring.hitBox = initializeHitBox(ring.sprite, [HurtBoxTypes.test]); // TODO make center smaller than sprite
+            //setHitBoxGraphic(ring.sprite, ring.hitBox);
+            ring.hitBox.onHit = function() {
+                rootComponent.addClick();
+                // TODO // Make this decrease base health + chip off a chunk of armor
+            }
+            this.registerEntity(ring);
+        });
+        
 
         // Set up asteroid entity.
         let asteroid = new Entity();
