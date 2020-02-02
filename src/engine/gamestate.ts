@@ -186,7 +186,7 @@ export class GameState extends BaseState {
             let ring = new Entity();
             ring.attachedToBase = true;
             ring.hitboxType = HitBoxType.STATION_PART;
-            ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
+            ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation, true);
             ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 5.25);
             ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID, HitBoxType.PLAYER, HitBoxType.STATION]); // TODO make center smaller than sprite
             ring.vel = initializeVelocity(1, new Vector3(0, 0, 0));
