@@ -165,9 +165,17 @@ export class GameState extends BaseState {
     }
 
     public render(renderer: WebGLRenderer) : void {
-        this.gameCamera.position.copy(this.playerEntity.pos.loc);
-        this.gameCamera.position.x -= this.viewWidth/2;
-        this.gameCamera.position.y -= this.viewHeight/2;
+        let cx = this.playerEntity.pos.loc.x;
+        let cy = this.playerEntity.pos.loc.y;
+
+        cx = Math.max(cx, -this.worldWidth/2 + this.viewWidth/2);
+        cx = Math.min(cx, this.worldWidth/2 - this.viewWidth/2);
+
+        cy = Math.max(cy, -this.worldHeight/2 + this.viewHeight/2);
+        cy = Math.min(cy, this.worldHeight/2 - this.viewHeight/2);
+
+        this.gameCamera.position.x = cx - this.viewWidth/2;
+        this.gameCamera.position.y = cy - this.viewHeight/2;
 
         renderer.clear();
         renderer.render(this.gameScene, this.gameCamera);
