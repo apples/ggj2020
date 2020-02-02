@@ -58,7 +58,13 @@ loadTextures([
         Resources.instance.setFonts(fonts);
 
         loadAudioElements([
-            "./data/audio/Pale_Blue.mp3"
+            "./data/audio/Pale_Blue.mp3",
+            "./data/audio/SFX_Bonk2.wav",
+            "./data/audio/SFX_Explosion_Long.wav",
+            "./data/audio/SFX_Explosion_Asteroid_Short.wav",
+            "./data/audio/Music_InGame_Space.wav",
+            "./data/audio/clickOpen.wav",
+            "./data/audio/SFX_Fireball.wav",
         ]).then((audioElements) => {
             // cache off audio elements
             Resources.instance.setAudioElements(audioElements);
