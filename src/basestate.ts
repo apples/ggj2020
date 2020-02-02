@@ -1,6 +1,7 @@
 import { RegistryKeyToSystemMap, RegistryKeyToEntityListMap } from "./frameworkinterfaces";
 import { WebGLRenderer } from "THREE";
 import { Widget } from "./ui/widget";
+import { Entity } from "./engine/entity";
 
 type BaseEntity = {
     dead: boolean | undefined;
@@ -43,7 +44,7 @@ export abstract class BaseState {
      * Removes Entity from each Entity list it is registered to.
      * @param ent
      */
-    protected removeEntity<E extends BaseEntity>(ent: E) {
+    protected removeEntity(ent: Entity) {
         // Remove entity from global ent list if registered.
         if (this.entityRegistry["global"].indexOf(ent) !== -1) {
             this.entityRegistry["global"].splice(this.entityRegistry["global"].indexOf(ent), 1);
@@ -65,7 +66,7 @@ export abstract class BaseState {
      * and every specific registry for each ecsKey component match.
      * @param ent
      */
-    protected registerEntity<E extends BaseEntity>(ent: E) {
+    public registerEntity<E extends BaseEntity>(ent: E) {
         let entityComponents: Array<string> = [];
 
         for (var component in ent) {
