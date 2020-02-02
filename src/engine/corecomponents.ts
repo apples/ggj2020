@@ -24,6 +24,8 @@ export interface PositionComponent {
     loc: Vector3;
     /** Direction vector. */
     dir: Vector3;
+    /** Wraparound behavior. */
+    wrap: boolean;
 }
 
 /**

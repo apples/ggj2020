@@ -5,14 +5,14 @@ export const playerAnim: AnimationSchema = {
     [SequenceTypes.walk]: [
         {
             ticks: 0,
-            texture: "./data/textures/msknight.png",
+            texture: "./data/textures/ship2.png",
             nextFrame: 0
        },
     ],
     [SequenceTypes.attack]: [
         {
             ticks: 0,
-            texture: "./data/textures/snow.png",
+            texture: "./data/textures/ship2Blue.png",
             nextFrame: 0
        },
     ],
