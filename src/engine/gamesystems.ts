@@ -2,8 +2,8 @@ import { Entity } from "./entity";
 import { GameState } from "./gamestate";
 import { Rect, getHitbox, getManifold } from "./commontypes";
 import { BeamComponent } from "./corecomponents";
-import { BufferGeometry, BufferAttribute, MeshBasicMaterial, Mesh } from "three";
 import { HitBoxType } from "./enums";
+import { BufferGeometry, BufferAttribute, MeshBasicMaterial, Mesh, PlaneGeometry } from "three";
 
 export function worldEdgeSystem(ents: readonly Entity[], state: GameState) {
     for (const ent of ents) {
@@ -62,7 +62,7 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
                     closest = ent;
                 }
             }
-            
+
         }
 
         beam.beam.targetEntity = closest;
@@ -75,7 +75,7 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
             beam.beam.targetEntity.pos.loc.x + 3, beam.beam.targetEntity.pos.loc.y + 3,  4.9,
             state.playerEntity.pos.loc.x - 3, state.playerEntity.pos.loc.y - 3,  4.9,
             state.playerEntity.pos.loc.x + 3,  state.playerEntity.pos.loc.y + 3,  4.9,
-    
+
             state.playerEntity.pos.loc.x - 3,  state.playerEntity.pos.loc.y - 3,  4.9,
             beam.beam.targetEntity.pos.loc.x + 3, beam.beam.targetEntity.pos.loc.y + 3,  4.9,
             beam.beam.targetEntity.pos.loc.x - 3, beam.beam.targetEntity.pos.loc.y - 3,  4.9,
@@ -83,16 +83,16 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
             beam.beam.targetEntity.pos.loc.x + 3, beam.beam.targetEntity.pos.loc.y + 3,  4.9,
             state.playerEntity.pos.loc.x + 3,  state.playerEntity.pos.loc.y + 3,  4.9,
             state.playerEntity.pos.loc.x - 3, state.playerEntity.pos.loc.y - 3,  4.9,
-    
+
             state.playerEntity.pos.loc.x - 3,  state.playerEntity.pos.loc.y - 3,  4.9,
             beam.beam.targetEntity.pos.loc.x - 3, beam.beam.targetEntity.pos.loc.y - 3,  4.9,
             beam.beam.targetEntity.pos.loc.x + 3, beam.beam.targetEntity.pos.loc.y + 3,  4.9
         ] );
-    
+
         // itemSize = 3 because there are 3 values (components) per vertex
         geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
         var material = new MeshBasicMaterial( { color: 0x5fcde4 } );
-    
+
         beam.beam.mesh.geometry = geometry;
         beam.beam.mesh.material = material;
     }
@@ -103,5 +103,39 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
         geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
         beam.beam.mesh.geometry = geometry;
     }
-    
+
+}
+
+export function healthHUDSystem(ents: readonly Entity[], state: GameState) {
+    const enforcers = ents
+        .filter(ent => (ent.hitBox && ent.hitBox.collideType === HitBoxType.ENFORCER))
+        .sort((a, b) => a.health.value - b.health.value);
+
+    if (enforcers.length) {
+        const hurtMost = enforcers[0];
+
+        if (hurtMost.health.value / hurtMost.health.maxValue < 0.5) {
+            if (!state.playerEntity.ouchie.mesh) {
+                const geom = new PlaneGeometry(10, 10);
+                const mat = new MeshBasicMaterial({ color: '#ff0000' });
+                state.playerEntity.ouchie.mesh = new Mesh(geom, mat);
+                state.gameScene.add(state.playerEntity.ouchie.mesh);
+            }
+
+            state.playerEntity.ouchie.mesh.position.copy(
+                hurtMost.pos.loc.clone().sub(state.playerEntity.pos.loc).normalize().multiplyScalar(100).add(state.playerEntity.pos.loc)
+            );
+            state.playerEntity.ouchie.mesh.position.z = 5;
+        } else {
+            if (state.playerEntity.ouchie.mesh) {
+                state.gameScene.remove(state.playerEntity.ouchie.mesh);
+                state.playerEntity.ouchie.mesh = undefined;
+            }
+        }
+    } else {
+        if (state.playerEntity.ouchie.mesh) {
+            state.gameScene.remove(state.playerEntity.ouchie.mesh);
+            state.playerEntity.ouchie.mesh = undefined;
+        }
+    }
 }

@@ -101,3 +101,7 @@ export interface HealthComponent {
     mesh: Mesh;
     onDeath: (self: Entity) => void;
 }
+
+export interface OuchieComponent {
+    mesh: Mesh;
+}

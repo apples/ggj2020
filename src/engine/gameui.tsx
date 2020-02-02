@@ -3,6 +3,7 @@ import { createJSXElement } from "../ui/createjsxelement";
 import { JSXElement } from "../ui/interfaces";
 import { Scene } from "THREE";
 import { Component } from "../ui/component";
+import { Entity } from "./entity";
 
 /**
  * Game state's UI elements
@@ -13,6 +14,8 @@ import { Component } from "../ui/component";
     clicks: number,
     color: string,
     hidden: boolean,
+    player: Entity,
+    ouchies: Entity[],
     hover: () => void,
     plunge: () => void,
     addClick: () => void,

@@ -11,7 +11,7 @@ import { Widget } from "../ui/widget";
 import { createWidget } from "../ui/widget";
 import { layoutWidget } from "../ui/layoutwidget";
 import { renderGameUi, Root } from "./rootgameui";
-import { worldEdgeSystem } from "./gamesystems";
+import { worldEdgeSystem, healthHUDSystem } from "./gamesystems";
 import { beamSystem } from "./gamesystems";
 import { enforcer } from "../behaviors/enforcer";
 
@@ -41,6 +41,8 @@ export class GameState extends BaseState {
 
     public turnOnHitboxes = false;
 
+    public rootComponent: Root;
+
     constructor(stateStack: BaseState[]) {
         super(stateStack);
         // Set up game scene.
@@ -61,7 +63,7 @@ export class GameState extends BaseState {
 
         this.uiScene.add(this.rootWidget);
 
-        let rootComponent = renderGameUi(this.uiScene, this.rootWidget);
+        this.rootComponent = renderGameUi(this.uiScene, this.rootWidget);
 
         // Register systems.
         this.registerSystem(controlSystem, "control");
@@ -74,6 +76,7 @@ export class GameState extends BaseState {
         this.registerSystem(beamSystem);
         this.registerSystem(behaviorSystem);
         this.registerSystem(healthSystem);
+        this.registerSystem(healthHUDSystem);
 
         playAudio("./data/audio/Pale_Blue.mp3", 0.3, true);
 
@@ -120,9 +123,8 @@ export class GameState extends BaseState {
                 }
             }
         }
-
+        player.ouchie = { mesh: undefined };
         player.control.camera = this.gameCamera;
-
         this.registerEntity(player);
 
         // Set up space station central hub entity.
@@ -158,7 +160,7 @@ export class GameState extends BaseState {
         geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
         var material = new MeshBasicMaterial( { color: 0x5fcde4 } );
         var mesh = new Mesh( geometry, material );
-        
+
         beam.beam.mesh = mesh;
 
         this.gameScene.add(mesh);
