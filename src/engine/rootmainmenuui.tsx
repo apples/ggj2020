@@ -62,10 +62,10 @@ export class MainMenuRoot extends Component<Props, State> {
                     left="640" top="390"
                 />
                 <panel height="120" /*color="red"*/ width="600" top="200" left="640">
-                    <label top="50" color="#C9CFFF" font_size="100" contents="Asteroid"></label>
+                    <label top="50" color="#C9CFFF" font_size="100" contents="Occupational"></label>
                 </panel>
                 <panel height="120" /*color="red"*/ width="800" top="400" left="640">
-                    <label top="50" color="#C9CFFF" font_size="100" contents="Terminators"></label>
+                    <label top="50" color="#C9CFFF" font_size="100" contents="Hazards"></label>
                 </panel>
                 <panel height="70" width="300" color={this.state.panelColor} top="600" left="640"
                     onHover={() => this.hover()}

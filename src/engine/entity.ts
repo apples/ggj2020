@@ -1,4 +1,4 @@
-import { PositionComponent, VelocityComponent, AnimationComponent, HitBoxComponent, TimerComponent, BeamComponent, BehaviorComponent, HealthComponent } from "./corecomponents";
+import { PositionComponent, VelocityComponent, AnimationComponent, HitBoxComponent, TimerComponent, BeamComponent, BehaviorComponent, HealthComponent, OuchieComponent } from "./corecomponents";
 import { ControlComponent } from "./controlcomponent";
 import { Mesh } from "three";
 import { HitBoxType } from "./enums";
@@ -11,6 +11,7 @@ import { HitBoxType } from "./enums";
  */
 export class Entity {
      public dead: boolean | undefined;
+     public attachedToBase: boolean;
      public hitboxType: HitBoxType;
      public pos: PositionComponent;
      public vel: VelocityComponent;
@@ -22,4 +23,5 @@ export class Entity {
      public beam: BeamComponent;
      public behavior: BehaviorComponent;
      public health: HealthComponent;
+     public ouchie: OuchieComponent;
 }

@@ -3,6 +3,7 @@ import { createJSXElement } from "../ui/createjsxelement";
 import { JSXElement } from "../ui/interfaces";
 import { Scene } from "THREE";
 import { Component } from "../ui/component";
+import { Entity } from "./entity";
 
 /**
  * Game state's UI elements
@@ -13,6 +14,8 @@ import { Component } from "../ui/component";
     clicks: number,
     color: string,
     hidden: boolean,
+    player: Entity,
+    ouchies: Entity[],
     hover: () => void,
     plunge: () => void,
     addClick: () => void,
@@ -34,11 +37,11 @@ export class Test extends Component<Props, State> {
         return(
             <div>
                 <panel height="70" width="200" color="#1f22dc" top="685" left="1180" >
+                    <panel left="50" height="50" width="50" color="#1f22dc" img="./data/textures/asteroid.png" onClick={()=> this.props.addClick()}>
+                        <label z_index="2" top="10" color="#ffffff" contents=""></label>
+                    </panel>
                     <panel left = "-50" z_index="1" height="50" width="50" color="#1f22dc" /*img="./data/textures/cottage.png"*/>
                         <label z_index="2" top="10" color="#ffffff" contents={this.props.ticks.toString()}></label>
-                    </panel>
-                    <panel left="50" height="50" width="50" color="#1f22dc" img="./data/textures/asteroid.png" onClick={()=> this.props.addClick()}>
-                        <label z_index="2" top="10" color="#ffffff" contents={this.props.clicks.toString()}></label>
                     </panel>
                 </panel>
             </div>

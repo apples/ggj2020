@@ -11,7 +11,7 @@ import { Widget } from "../ui/widget";
 import { createWidget } from "../ui/widget";
 import { layoutWidget } from "../ui/layoutwidget";
 import { renderGameUi, Root } from "./rootgameui";
-import { worldEdgeSystem } from "./gamesystems";
+import { worldEdgeSystem, healthHUDSystem } from "./gamesystems";
 import { beamSystem } from "./gamesystems";
 import { enforcer } from "../behaviors/enforcer";
 
@@ -36,10 +36,12 @@ export class GameState extends BaseState {
 
     public ticks = 0;
     public lasteroid = 0;
-    public asteroidDelay = 6;
+    public asteroidDelay = 70;
     public asteroidsCount = 0;
 
     public turnOnHitboxes = false;
+
+    public rootComponent: Root;
 
     constructor(stateStack: BaseState[]) {
         super(stateStack);
@@ -61,7 +63,7 @@ export class GameState extends BaseState {
 
         this.uiScene.add(this.rootWidget);
 
-        let rootComponent = renderGameUi(this.uiScene, this.rootWidget);
+        this.rootComponent = renderGameUi(this.uiScene, this.rootWidget);
 
         // Register systems.
         this.registerSystem(controlSystem, "control");
@@ -74,6 +76,7 @@ export class GameState extends BaseState {
         this.registerSystem(beamSystem);
         this.registerSystem(behaviorSystem);
         this.registerSystem(healthSystem);
+        this.registerSystem(healthHUDSystem);
 
         playAudio("./data/audio/Music_InGame_Space.wav", 0.5, true);
 
@@ -93,13 +96,13 @@ export class GameState extends BaseState {
             // this.gameScene.remove(player.sprite);
             // this.stateStack.pop();
         });
-        player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID, HitBoxType.STATION_PART, HitBoxType.STATION], 0, 0, 0, 0);
+        player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID, HitBoxType.STATION_PART, HitBoxType.STATION, HitBoxType.ENFORCER], 0, 0, 0, 0);
         if (this.turnOnHitboxes) setHitBoxGraphic(player.sprite, player.hitBox);
         player.hitBox.onHit = function(player, other) {
             if (other.hitboxType == HitBoxType.ASTEROID) {
-                 // player gets yeeted by an asteroid
-                //player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(11));
+                // player gets yeeted by an asteroid
                 playAudio("./data/audio/SFX_Bonk2.wav", 0.3, false);
+                player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(8));
             }
             if (other.hitboxType == HitBoxType.STATION || other.hitboxType == HitBoxType.STATION_PART){
                 // player bounces off the base
@@ -108,11 +111,27 @@ export class GameState extends BaseState {
 
                 if (player.pos.loc.y > 0) player.vel.positional.setY(Math.abs(player.vel.positional.y));
                 else player.vel.positional.setY(Math.abs(player.vel.positional.y) * -1);
+
+                if (other.hitboxType == HitBoxType.STATION_PART) {
+                    if (other.attachedToBase == false) {
+                        // base piece gets nudged by the player
+                        if (player.pos.loc.x > 0) other.vel.positional.setX(Math.abs(player.vel.positional.x) * -0.5);
+                        else other.vel.positional.setX(Math.abs(player.vel.positional.x) * 0.5);
+
+                        if (player.pos.loc.y > 0) other.vel.positional.setY(Math.abs(player.vel.positional.y) * -0.5);
+                        else other.vel.positional.setY(Math.abs(player.vel.positional.y) * 0.5);
+                    }
+                }
+            }
+            if (other.hitBox.collideType == HitBoxType.ENFORCER) {
+                if (other.dead != true) {
+                    // base piece gets nudged by the player
+                    other.health.value = other.health.maxValue;
+                }
             }
         }
-
+        player.ouchie = { mesh: undefined };
         player.control.camera = this.gameCamera;
-
         this.registerEntity(player);
 
         // Set up space station central hub entity.
@@ -122,9 +141,11 @@ export class GameState extends BaseState {
         station.sprite = initializeSprite("./data/textures/base3MiddleLarge.png", this.gameScene, 5.25);
         station.hitBox = initializeHitBox(station.sprite, HitBoxType.STATION, [HitBoxType.ASTEROID], 130, 130, 0, 0);
         if (this.turnOnHitboxes) setHitBoxGraphic(station.sprite, station.hitBox);
-        station.hitBox.onHit = function(self, other) {
+
+        station.hitBox.onHit = () => {
+            // If this gets hit by an asteroid, you lose.
             playAudio("./data/audio/SFX_Explosion_Long.wav", 0.3, false);
-            // TODO // If this gets hit by an asteroid, you lose.
+           this.pushLoseState();
         }
         this.registerEntity(station);
 
@@ -149,7 +170,7 @@ export class GameState extends BaseState {
         geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
         var material = new MeshBasicMaterial( { color: 0x5fcde4 } );
         var mesh = new Mesh( geometry, material );
-        
+
         beam.beam.mesh = mesh;
 
         this.gameScene.add(mesh);
@@ -176,7 +197,7 @@ export class GameState extends BaseState {
             ring.hitboxType = HitBoxType.STATION_PART;
             ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
             ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 5.25);
-            ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID, HitBoxType.PLAYER]); // TODO make center smaller than sprite
+            ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID, HitBoxType.PLAYER, HitBoxType.STATION]); // TODO make center smaller than sprite
             ring.vel = initializeVelocity(1, new Vector3(0, 0, 0));
 
             if (entity.flipHitbox) {
@@ -197,6 +218,14 @@ export class GameState extends BaseState {
                     else other.vel.positional.setY(Math.abs(other.vel.positional.y) * -1);
 
                     self.vel.positional.copy(other.vel.positional.clone().multiplyScalar(0.133));
+
+                    self.attachedToBase = false;
+                }
+
+                if (other.hitboxType == HitBoxType.STATION && self.attachedToBase == false) {
+                    self.attachedToBase = true;
+                    self.vel = initializeVelocity(1, new Vector3(0, 0, 0));
+                    self.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
                 }
                 playAudio("./data/audio/SFX_Explosion_Long.wav", 0.3, false);
             }
@@ -211,7 +240,13 @@ export class GameState extends BaseState {
 
 
         this.spawnEnforcerShip();
-        this.spawnEnforcerShip();
+        //this.spawnEnforcerShip();
+    }
+
+    public pushLoseState = (): void => {
+        //let loseState = new LoseState(this.stateStack, this.rootComponent.state.clicks);
+        this.stateStack.pop();
+        //this.stateStack.push(loseState);
     }
 
     public removeEntity(ent: Entity) {
