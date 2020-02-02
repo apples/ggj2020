@@ -94,6 +94,9 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
         switch (beam.beam.targetEntity.hitBox.collideType) {
             case HitBoxType.ENFORCER: {
                 beam.beam.targetEntity.health.value += 10/60;
+                if (beam.beam.targetEntity.health.value > beam.beam.targetEntity.health.maxValue) {
+                    beam.beam.targetEntity.health.value = beam.beam.targetEntity.health.maxValue;
+                }
                 break;
             }
             case HitBoxType.STATION_PART: {
