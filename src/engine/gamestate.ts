@@ -75,7 +75,7 @@ export class GameState extends BaseState {
         this.registerSystem(behaviorSystem);
         this.registerSystem(healthSystem);
 
-        playAudio("./data/audio/Pale_Blue.mp3", 0.3, true);
+        playAudio("./data/audio/Music_InGame_Space.wav", 0.5, true);
 
         // Set up player entity.
         let player = new Entity();
@@ -99,6 +99,7 @@ export class GameState extends BaseState {
             if (other.hitboxType == HitBoxType.ASTEROID) {
                  // player gets yeeted by an asteroid
                 //player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(11));
+                playAudio("./data/audio/SFX_Bonk2.wav", 0.3, false);
             }
             if (other.hitboxType == HitBoxType.STATION || other.hitboxType == HitBoxType.STATION_PART){
                 // player bounces off the base
@@ -122,6 +123,7 @@ export class GameState extends BaseState {
         station.hitBox = initializeHitBox(station.sprite, HitBoxType.STATION, [HitBoxType.ASTEROID], 130, 130, 0, 0);
         if (this.turnOnHitboxes) setHitBoxGraphic(station.sprite, station.hitBox);
         station.hitBox.onHit = function(self, other) {
+            playAudio("./data/audio/SFX_Explosion_Long.wav", 0.3, false);
             // TODO // If this gets hit by an asteroid, you lose.
         }
         this.registerEntity(station);
@@ -196,6 +198,7 @@ export class GameState extends BaseState {
 
                     self.vel.positional.copy(other.vel.positional.clone().multiplyScalar(0.133));
                 }
+                playAudio("./data/audio/SFX_Explosion_Long.wav", 0.3, false);
             }
             this.registerEntity(ring);
         });
@@ -294,6 +297,7 @@ export class GameState extends BaseState {
         ship.vel.friction = 0.98;
         ship.hitBox = initializeHitBox(ship.sprite, HitBoxType.ENFORCER, [HitBoxType.ASTEROID], 0, 0, 0, 0);
         ship.hitBox.onHit = (self, other, _manifold) => {
+            playAudio("./data/audio/SFX_Explosion_Asteroid_Short.wav", 0.3, false);
             --self.health.value;
             this.removeEntity(other);
         };
