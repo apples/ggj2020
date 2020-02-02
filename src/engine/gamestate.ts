@@ -21,8 +21,8 @@ export class GameState extends BaseState {
     public readonly viewWidth = 1280;
     public readonly viewHeight = 720;
 
-    public readonly worldWidth = 1280 * 1;
-    public readonly worldHeight = 720 * 1;
+    public readonly worldWidth = 1280 * 4;
+    public readonly worldHeight = 720 * 4;
 
     public gameScene: Scene;
     public gameCamera: Camera;
