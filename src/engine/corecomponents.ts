@@ -1,6 +1,7 @@
 import {
     Vector3,
     Euler,
+    Mesh,
 } from "three";
 import { Entity } from "./entity";
 import { AnimationSchema } from "./engineinterfaces";
@@ -76,12 +77,11 @@ export interface TimerComponent {
  * Beam things I dunno
  */
 export interface BeamComponent {
-
-    //basePos: Vector3;
     baseEntity: Entity;
     targetEntity: Entity;
     firing: boolean;
     type: number;
+    mesh: Mesh;
 }
 
 /**

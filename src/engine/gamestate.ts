@@ -108,6 +108,9 @@ export class GameState extends BaseState {
                 else player.vel.positional.setY(Math.abs(player.vel.positional.y) * -1);
             }
         }
+
+        player.control.camera = this.gameCamera;
+
         this.registerEntity(player);
 
         // Set up space station central hub entity.
@@ -130,19 +133,22 @@ export class GameState extends BaseState {
         // create a simple square shape. We duplicate the top left and bottom right
         // vertices because each vertex needs to appear once per triangle.
         var vertices = new Float32Array( [
-            -1000.0, -10.0,  4.9,
-            1000.0, -10.0,  4.9,
-            1000.0,  10.0,  4.9,
+            -1000.0, -3.0,  4.9,
+            this.playerEntity.pos.loc.x, -3.0,  4.9,
+            this.playerEntity.pos.loc.x,  3.0,  4.9,
 
-            1000.0,  10.0,  4.9,
-            -1000.0,  10.0,  4.9,
-            -1000.0, -10.0,  4.9
+            this.playerEntity.pos.loc.x,  3.0,  4.9,
+            -1000.0,  3.0,  4.9,
+            -1000.0, -3.0,  4.9
         ] );
 
         // itemSize = 3 because there are 3 values (components) per vertex
         geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
-        var material = new MeshBasicMaterial( { color: 0xff0000 } );
+        var material = new MeshBasicMaterial( { color: 0x5fcde4 } );
         var mesh = new Mesh( geometry, material );
+        
+        beam.beam.mesh = mesh;
+
         this.gameScene.add(mesh);
 
         this.registerEntity(beam);

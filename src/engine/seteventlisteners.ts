@@ -27,8 +27,30 @@ export function setEventListeners(canvas: HTMLCanvasElement, stateStack: BaseSta
         last(stateStack).getEntitiesByKey<Entity>("control").forEach(ent=> {
             if (ent.control) {
                 ent.control.attack = true;
+
+                var vec = new Vector3(); // create once and reuse
+                var pos = new Vector3(); // create once and reuse
+
+                vec.set(
+                    ( e.clientX / window.innerWidth ) * 2 - 1,
+                    - ( e.clientY / window.innerHeight ) * 2 + 1,
+                    0.5 );
+
+                vec.unproject( ent.control.camera );
+
+                vec.sub( ent.control.camera.position ).normalize();
+
+                var distance = - ent.control.camera.position.z / vec.z;
+
+                pos.copy( ent.control.camera.position ).add( vec.multiplyScalar( distance ) );
+
+                ent.control.mousePos = pos;
+
+                console.log(pos.x);
+                console.log(pos.y);
             }
         });
+
     });
 
     canvas.addEventListener("mouseup", function (e: MouseEvent) {
