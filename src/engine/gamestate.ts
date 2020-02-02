@@ -78,7 +78,7 @@ export class GameState extends BaseState {
         this.registerSystem(healthSystem);
         this.registerSystem(healthHUDSystem);
 
-        playAudio("./data/audio/Music_InGame_Space.wav", 0.5, true);
+        playAudio("./data/audio/Music_InGame_Space.wav", 0.4, true);
 
         // Set up player entity.
         let player = new Entity();
@@ -144,7 +144,7 @@ export class GameState extends BaseState {
 
         station.hitBox.onHit = () => {
             // If this gets hit by an asteroid, you lose.
-            playAudio("./data/audio/SFX_Explosion_Long.wav", 0.3, false);
+            playAudio("./data/audio/SFX_Explosion_Long.wav", 0.4, false);
            this.pushLoseState();
         }
         this.registerEntity(station);
@@ -228,7 +228,7 @@ export class GameState extends BaseState {
                     self.vel = initializeVelocity(1, new Vector3(0, 0, 0));
                     self.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
                 }
-                playAudio("./data/audio/SFX_Explosion_Long.wav", 0.3, false);
+                playAudio("./data/audio/SFX_Explosion_Long.wav", 0.4, false);
             }
             this.registerEntity(ring);
         });

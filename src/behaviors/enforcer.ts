@@ -4,6 +4,7 @@ import { Entity } from "../engine/entity";
 import { Euler } from "three";
 import { GameState } from "../engine/gamestate";
 import { initializePosition, initializeSprite, initializeVelocity, initializeHitBox, initializeTimer } from "../engine/initializers";
+import { Resources } from "../resourcemanager";
 
 function moveToTarget(self: Entity, target: Entity) {
     const targetVec = target.pos.loc.clone().sub(self.pos.loc);
@@ -45,6 +46,10 @@ function shootAtTarget(self: Entity, target: Entity, state: GameState) {
     };
     bullet.timer = initializeTimer(60, () => state.removeEntity(bullet));
     state.registerEntity(bullet);
+
+    let audio = Resources.instance.getAudioElement("./data/audio/SFX_Fireball.wav");
+    audio.volume = .3;
+    audio.play()
 }
 
 export function* enforcer(): Behavior {
