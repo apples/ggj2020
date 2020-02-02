@@ -10,11 +10,8 @@ import { HitBoxType } from "./enums";
  * the properties within the component.
  */
 export class Entity {
-<<<<<<< HEAD
      public dead: boolean | undefined;
-=======
      public hitboxType: HitBoxType;
->>>>>>> fac1813ed96b7aff786c5ec0ea94eef75a3bacfc
      public pos: PositionComponent;
      public vel: VelocityComponent;
      public sprite: Mesh;
