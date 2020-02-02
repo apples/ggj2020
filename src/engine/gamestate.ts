@@ -137,7 +137,8 @@ export class GameState extends BaseState {
             ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
             ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 5.25);
             ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID, HitBoxType.PLAYER]); // TODO make center smaller than sprite
-            
+            ring.vel = initializeVelocity(1, new Vector3(0, 0, 0));
+
             if (entity.flipHitbox) {
                 let newHeight = ring.hitBox.width;
                 let newWidth = ring.hitBox.height;
@@ -147,12 +148,16 @@ export class GameState extends BaseState {
             
             if (this.turnOnHitboxes) setHitBoxGraphic(ring.sprite, ring.hitBox);
             ring.hitBox.onHit = function(self, other) {
-                if (other.pos.loc.x > 0) other.vel.positional.setX(Math.abs(other.vel.positional.x));
-                else other.vel.positional.setX(Math.abs(other.vel.positional.x) * -1);
+                // Asteroid knocks the station ring loose.
+                if (other.hitboxType == HitBoxType.ASTEROID) {
+                    if (other.pos.loc.x > 0) other.vel.positional.setX(Math.abs(other.vel.positional.x));
+                    else other.vel.positional.setX(Math.abs(other.vel.positional.x) * -1);
 
-                if (other.pos.loc.y > 0) other.vel.positional.setY(Math.abs(other.vel.positional.y));
-                else other.vel.positional.setY(Math.abs(other.vel.positional.y) * -1);
-                // TODO // Knock the station ring loose.
+                    if (other.pos.loc.y > 0) other.vel.positional.setY(Math.abs(other.vel.positional.y));
+                    else other.vel.positional.setY(Math.abs(other.vel.positional.y) * -1);
+ 
+                    self.vel.positional.copy(other.vel.positional.clone().multiplyScalar(0.133));
+                }
             }
             this.registerEntity(ring);
         });
