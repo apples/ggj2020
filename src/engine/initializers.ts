@@ -18,12 +18,14 @@ import {
     PositionComponent,
     VelocityComponent,
     TimerComponent,
-    BeamComponent
+    BeamComponent,
+    BehaviorComponent,
 } from "./corecomponents";
 import { Resources } from "../resourcemanager";
 import { ControlComponent } from "./controlcomponent";
 import { AnimationSchema } from "./engineinterfaces";
 import { Entity } from "./entity";
+import { Behavior } from "./behavior";
 
 /**
  * Initializes sprites, velocities, animations, etc.
@@ -197,4 +199,17 @@ export function initializeBeam(player: Entity): BeamComponent {
         firing: false,
         type: 0
     };
+}
+
+/**
+ * Initializes a behavior.
+ * @param root Root behavior.
+ */
+export function initializeBehavior(root: () => Behavior): BehaviorComponent {
+    const behavior = {
+        root: root,
+        current: undefined,
+    };
+
+    return behavior;
 }

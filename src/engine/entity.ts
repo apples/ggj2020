@@ -1,6 +1,7 @@
-import { PositionComponent, VelocityComponent, AnimationComponent, HitBoxComponent, TimerComponent, BeamComponent } from "./corecomponents";
+import { PositionComponent, VelocityComponent, AnimationComponent, HitBoxComponent, TimerComponent, BeamComponent, BehaviorComponent } from "./corecomponents";
 import { ControlComponent } from "./controlcomponent";
 import { Mesh } from "three";
+import { HitBoxType } from "./enums";
 
 /**
  * Class to represent an entity in the game. No constructor as an entity can
@@ -9,6 +10,8 @@ import { Mesh } from "three";
  * the properties within the component.
  */
 export class Entity {
+     public dead: boolean | undefined;
+     public hitboxType: HitBoxType;
      public pos: PositionComponent;
      public vel: VelocityComponent;
      public sprite: Mesh;
@@ -17,5 +20,5 @@ export class Entity {
      public hitBox: HitBoxComponent;
      public timer: TimerComponent;
      public beam: BeamComponent;
-
+     public behavior: BehaviorComponent;
 }

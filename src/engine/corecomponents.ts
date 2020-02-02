@@ -6,6 +6,8 @@ import { Entity } from "./entity";
 import { AnimationSchema } from "./engineinterfaces";
 import { HitBoxType, SequenceTypes } from "./enums";
 import { Manifold } from "./commontypes";
+import { BaseState } from "../basestate";
+import { Behavior } from "./behavior";
 
 /**
  * Position component
@@ -80,4 +82,12 @@ export interface BeamComponent {
     targetEntity: Entity;
     firing: boolean;
     type: number;
+}
+
+/**
+ * Behavior Component.
+ */
+export interface BehaviorComponent {
+    root: () => Behavior;
+    current: Behavior;
 }
