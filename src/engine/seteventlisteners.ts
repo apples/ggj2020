@@ -23,6 +23,23 @@ export function setEventListeners(canvas: HTMLCanvasElement, stateStack: BaseSta
     canvas.addEventListener("mousedown", function (e: MouseEvent) {
         traverseTreeForOnClick(last(stateStack).rootWidget, e);
         canvas.setAttribute("class", "default");
+
+        last(stateStack).getEntitiesByKey<Entity>("control").forEach(ent=> {
+            if (ent.control) {
+                ent.control.attack = true;
+            }
+        });
+    });
+
+    canvas.addEventListener("mouseup", function (e: MouseEvent) {
+        //traverseTreeForOnClick(last(stateStack).rootWidget, e);
+        //canvas.setAttribute("class", "default");
+
+        last(stateStack).getEntitiesByKey<Entity>("control").forEach(ent=> {
+            if (ent.control) {
+                ent.control.attack = false;
+            }
+        });
     });
 
     canvas.addEventListener("mousemove", function (e: MouseEvent) {

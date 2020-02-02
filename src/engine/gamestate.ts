@@ -1,6 +1,6 @@
-import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer, initializeBehavior } from "./initializers";
+import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer, initializeBeam, initializeBehavior } from "./initializers";
+import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler, BufferGeometry, BufferAttribute, MeshBasicMaterial, Mesh } from "three";
 import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem, behaviorSystem } from "./coresystems";
-import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler } from "three";
 import { playAudio, setHitBoxGraphic } from "./helpers";
 import { SequenceTypes, HitBoxType } from "./enums";
 import { controlSystem } from "./controlsystem";
@@ -12,6 +12,7 @@ import { createWidget } from "../ui/widget";
 import { layoutWidget } from "../ui/layoutwidget";
 import { renderGameUi, Root } from "./rootgameui";
 import { worldEdgeSystem } from "./gamesystems";
+import { beamSystem } from "./gamesystems";
 import { enforcer } from "../behaviors/enforcer";
 
 /**
@@ -31,6 +32,7 @@ export class GameState extends BaseState {
     public uiCamera: Camera;
     public rootWidget: Widget;
     public playerEntity: Entity;
+    public BeamEntity: Entity;
 
     public ticks = 0;
     public lasteroid = 0;
@@ -69,6 +71,7 @@ export class GameState extends BaseState {
         this.registerSystem(timerSystem);
         this.registerSystem(positionSystem);
         this.registerSystem(worldEdgeSystem);
+        this.registerSystem(beamSystem);
         this.registerSystem(behaviorSystem);
 
         playAudio("./data/audio/Pale_Blue.mp3", 0.3, true);
@@ -118,6 +121,32 @@ export class GameState extends BaseState {
             // TODO // If this gets hit by an asteroid, you lose.
         }
         this.registerEntity(station);
+
+        //set up beam entity
+        let beam = new Entity();
+        beam.beam = initializeBeam(this.playerEntity);
+
+        var geometry = new BufferGeometry();
+        // create a simple square shape. We duplicate the top left and bottom right
+        // vertices because each vertex needs to appear once per triangle.
+        var vertices = new Float32Array( [
+            -1000.0, -10.0,  4.9,
+            1000.0, -10.0,  4.9,
+            1000.0,  10.0,  4.9,
+
+            1000.0,  10.0,  4.9,
+            -1000.0,  10.0,  4.9,
+            -1000.0, -10.0,  4.9
+        ] );
+
+        // itemSize = 3 because there are 3 values (components) per vertex
+        geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
+        var material = new MeshBasicMaterial( { color: 0xff0000 } );
+        var mesh = new Mesh( geometry, material );
+        this.gameScene.add(mesh);
+
+        this.registerEntity(beam);
+        this.BeamEntity = beam;
 
         let offset = 126;
         let ringEntities = [

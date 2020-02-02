@@ -1,6 +1,7 @@
 import { Entity } from "./entity";
 import { GameState } from "./gamestate";
 import { Rect, getHitbox, getManifold } from "./commontypes";
+import { BeamComponent } from "./corecomponents";
 
 export function worldEdgeSystem(ents: readonly Entity[], state: GameState) {
     for (const ent of ents) {
@@ -41,5 +42,27 @@ export function worldEdgeSystem(ents: readonly Entity[], state: GameState) {
                 }
             }
         }
+    }
+}
+
+export function beamSystem(ents: readonly Entity[], state: GameState) {
+    var beam: Entity = ents.find(x => x.beam);
+    var closest: Entity;
+    var closestValue: number = Number.MAX_VALUE;
+
+    if(beam){
+        for (const ent of ents) {
+            if(ent.pos)//filter types?
+            {
+                var distance = ent.pos.loc.distanceTo(beam.beam.baseEntity.pos.loc);
+                if(distance < closestValue){
+                    closestValue = distance;
+                    closest = ent;
+                }
+            }
+            
+        }
+
+        beam.beam.targetEntity = closest;
     }
 }

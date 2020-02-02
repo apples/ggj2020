@@ -2,6 +2,7 @@ import { Entity } from "./entity";
 import { changeSequence } from "./helpers";
 import { SequenceTypes } from "./enums";
 import { Vector3 } from "three";
+import { GameState } from "./gamestate";
 
 /**
  * Control system: Movement left, right, up, down
@@ -12,7 +13,7 @@ import { Vector3 } from "three";
  * Control system.
  * @param ents Ents from the controllableEntities registry.
  */
-export function controlSystem(ents: ReadonlyArray<Entity>){
+export function controlSystem(ents: ReadonlyArray<Entity>, state: GameState){
     let movementDirection = new Vector3(0,0,0);
 
     ents.forEach(ent => {
@@ -73,13 +74,20 @@ export function controlSystem(ents: ReadonlyArray<Entity>){
                 ent.anim = changeSequence(SequenceTypes.walk, ent.anim);
             }
 
-            if (ent.control.attacked) {
-                ent.control.attackTimer++;
-            }
+            // if (ent.control.attacked) {
+            //     ent.control.attackTimer++;
+            // }
 
-            if (ent.control.attackTimer > 75) {
-                ent.control.attacked = false;
-                ent.control.attackTimer = 0;
+            // if (ent.control.attackTimer > 75) {
+            //     ent.control.attacked = false;
+            //     ent.control.attackTimer = 0;
+            // }
+
+            if(ent.control.attack) {
+                state.BeamEntity.beam.firing = true;
+            }
+            else {
+                state.BeamEntity.beam.firing = false;
             }
         }
     });

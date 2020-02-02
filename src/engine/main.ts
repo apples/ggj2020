@@ -85,6 +85,11 @@ function main(canvasContainer: HTMLElement) {
     // append canvas element to canvas container
     canvasContainer.append(renderer.domElement);
 
+    //disable right clck context menu
+    canvasContainer.oncontextmenu = function (e) {
+        e.preventDefault();
+    };
+
     // initialize state stack
     let stateStack: BaseState[] = [];
     let mainMenuState = new MainMenuState(stateStack);

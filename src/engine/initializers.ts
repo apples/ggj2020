@@ -18,11 +18,13 @@ import {
     PositionComponent,
     VelocityComponent,
     TimerComponent,
+    BeamComponent,
     BehaviorComponent,
 } from "./corecomponents";
 import { Resources } from "../resourcemanager";
 import { ControlComponent } from "./controlcomponent";
 import { AnimationSchema } from "./engineinterfaces";
+import { Entity } from "./entity";
 import { Behavior } from "./behavior";
 
 /**
@@ -183,6 +185,20 @@ export function initializeVelocity(acceleration: number, positionalVel?: Vector3
     }
 
     return velocity;
+}
+
+/**
+ * 
+ * @param targetE 
+ */
+export function initializeBeam(player: Entity): BeamComponent {
+    return { 
+        targetEntity: null,
+        //basePos: null,
+        baseEntity: player,
+        firing: false,
+        type: 0
+    };
 }
 
 /**

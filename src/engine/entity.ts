@@ -1,4 +1,4 @@
-import { PositionComponent, VelocityComponent, AnimationComponent, HitBoxComponent, TimerComponent, BehaviorComponent } from "./corecomponents";
+import { PositionComponent, VelocityComponent, AnimationComponent, HitBoxComponent, TimerComponent, BeamComponent, BehaviorComponent } from "./corecomponents";
 import { ControlComponent } from "./controlcomponent";
 import { Mesh } from "three";
 import { HitBoxType } from "./enums";
@@ -19,5 +19,6 @@ export class Entity {
      public control: ControlComponent;
      public hitBox: HitBoxComponent;
      public timer: TimerComponent;
+     public beam: BeamComponent;
      public behavior: BehaviorComponent;
 }
