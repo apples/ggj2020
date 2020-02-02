@@ -4,7 +4,7 @@ import {
 } from "three";
 import { Entity } from "./entity";
 import { Resources } from "../resourcemanager";
-import { Rect, Manifold } from "./commontypes";
+import { Rect, Manifold, getManifold, getHitbox } from "./commontypes";
 
 /**
  * Animation System
@@ -58,28 +58,6 @@ export function collisionSystem(ents: ReadonlyArray<Entity>) {
     type Body = {
         ent: Entity;
         rect: Rect;
-    };
-
-    const getHitbox = (e: Entity): Rect => ({
-        left: e.pos.loc.x + e.hitBox.offsetX - e.hitBox.width/2,
-        right: e.pos.loc.x + e.hitBox.offsetX + e.hitBox.width/2,
-        bottom: e.pos.loc.y + e.hitBox.offsetY - e.hitBox.height/2,
-        top: e.pos.loc.y + e.hitBox.offsetY + e.hitBox.height/2,
-    });
-
-    const getManifold = (a: Rect, b: Rect): Manifold => {
-        const rect = {
-            left: Math.max(a.left, b.left),
-            right: Math.min(a.right, b.right),
-            bottom: Math.max(a.bottom, b.bottom),
-            top: Math.min(a.top, b.top),
-        };
-
-        return {
-            ...rect,
-            width: rect.right - rect.left,
-            height: rect.top - rect.bottom,
-        };
     };
 
     const tryOnHit = (a: Entity, b: Entity, m: Manifold) => {
