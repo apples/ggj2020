@@ -85,13 +85,10 @@ export class GameState extends BaseState {
         });
         player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID], 0, 0, 0, 0);
         //setHitBoxGraphic(player.sprite, player.hitBox);
-        player.hitBox.onHit = function(other) {
+        player.hitBox.onHit = function(player, other) {
 
             rootComponent.addClick();
-            // TODO // Make this decrease player health
-            player.vel = other.vel;
-            player.pos = other.pos;
-            player.control = other.control;
+            player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(11));
         }
         this.registerEntity(player);
 

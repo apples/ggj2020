@@ -24,8 +24,6 @@ export function controlSystem(ents: ReadonlyArray<Entity>){
                 movementDirection.setX(-1);
                 movementDirection.setY(0);
                 ent.vel.positional.add(movementDirection.multiplyScalar(ent.vel.acceleration));
-                // test change seq
-                ent.anim = changeSequence(SequenceTypes.attack, ent.anim);
             }
 
             // Right
@@ -35,8 +33,6 @@ export function controlSystem(ents: ReadonlyArray<Entity>){
                 movementDirection.setX(1);
                 movementDirection.setY(0);
                 ent.vel.positional.add(movementDirection.multiplyScalar(ent.vel.acceleration));
-                // test change seq
-                ent.anim = changeSequence(SequenceTypes.walk, ent.anim);
             }
 
             // Up
@@ -59,10 +55,12 @@ export function controlSystem(ents: ReadonlyArray<Entity>){
 
             // Space
             if (ent.control.attack && !ent.control.attacked) {
-                ent.control.attacked = true;
-                let attack = new Entity();
+                // test change seq
+                ent.anim = changeSequence(SequenceTypes.attack, ent.anim);
+                //ent.control.attacked = true;
+                //let attack = new Entity();
                 // attack.timer = { ticks: 15 };
-                attack.pos.loc = ent.pos.loc;//x: ent.pos.x + 100, y: ent.pos.y + 50, z: 5};
+                //attack.pos.loc = ent.pos.loc;//x: ent.pos.x + 100, y: ent.pos.y + 50, z: 5};
                 // attack.graphic = setHitBoxGraphic(stage, 50, 50);
                 // attack.hitBox = {
                 //     collidesWith: [HurtBoxTypes.test],
@@ -71,6 +69,8 @@ export function controlSystem(ents: ReadonlyArray<Entity>){
                 //     onHit: function() { console.log("hit")
                 // }};
                 //ents.push(attack);
+            } else {
+                ent.anim = changeSequence(SequenceTypes.walk, ent.anim);
             }
 
             if (ent.control.attacked) {
