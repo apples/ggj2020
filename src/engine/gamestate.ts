@@ -184,6 +184,7 @@ export class GameState extends BaseState {
         ringEntities.forEach((entity) => {
             let that=this;
             let ring = new Entity();
+            ring.attachedToBase = true;
             ring.hitboxType = HitBoxType.STATION_PART;
             ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
             ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 5.25);
