@@ -59,6 +59,8 @@ export function initializeControls(): ControlComponent {
         right: false,
         up: false,
         down: false,
+        camera: null,
+        mousePos: null,
     };
 }
 
@@ -197,7 +199,8 @@ export function initializeBeam(player: Entity): BeamComponent {
         //basePos: null,
         baseEntity: player,
         firing: false,
-        type: 0
+        type: 0,
+        mesh: null,
     };
 }
 

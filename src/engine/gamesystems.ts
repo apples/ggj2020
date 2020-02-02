@@ -3,7 +3,7 @@ import { GameState } from "./gamestate";
 import { Rect, getHitbox, getManifold } from "./commontypes";
 import { BeamComponent } from "./corecomponents";
 import { HitBoxType } from "./enums";
-import { Mesh, Plane, PlaneGeometry, MeshBasicMaterial } from "three";
+import { BufferGeometry, BufferAttribute, MeshBasicMaterial, Mesh, PlaneGeometry } from "three";
 
 export function worldEdgeSystem(ents: readonly Entity[], state: GameState) {
     for (const ent of ents) {
@@ -52,11 +52,11 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
     var closest: Entity;
     var closestValue: number = Number.MAX_VALUE;
 
-    if(beam){
+    if(beam && beam.beam.firing){
         for (const ent of ents) {
-            if(ent.pos)//filter types?
+            if(ent.pos && ent.hitBox && ent.hitBox.collideType === HitBoxType.ASTEROID)//filter types?
             {
-                var distance = ent.pos.loc.distanceTo(beam.beam.baseEntity.pos.loc);
+                var distance = ent.pos.loc.distanceTo(state.playerEntity.control.mousePos);
                 if(distance < closestValue){
                     closestValue = distance;
                     closest = ent;
@@ -67,6 +67,43 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
 
         beam.beam.targetEntity = closest;
     }
+
+    if(beam.beam.targetEntity && beam.beam.firing) {
+        var geometry = new BufferGeometry();
+
+        var vertices = new Float32Array( [
+            beam.beam.targetEntity.pos.loc.x + 3, beam.beam.targetEntity.pos.loc.y + 3,  4.9,
+            state.playerEntity.pos.loc.x - 3, state.playerEntity.pos.loc.y - 3,  4.9,
+            state.playerEntity.pos.loc.x + 3,  state.playerEntity.pos.loc.y + 3,  4.9,
+
+            state.playerEntity.pos.loc.x - 3,  state.playerEntity.pos.loc.y - 3,  4.9,
+            beam.beam.targetEntity.pos.loc.x + 3, beam.beam.targetEntity.pos.loc.y + 3,  4.9,
+            beam.beam.targetEntity.pos.loc.x - 3, beam.beam.targetEntity.pos.loc.y - 3,  4.9,
+
+            beam.beam.targetEntity.pos.loc.x + 3, beam.beam.targetEntity.pos.loc.y + 3,  4.9,
+            state.playerEntity.pos.loc.x + 3,  state.playerEntity.pos.loc.y + 3,  4.9,
+            state.playerEntity.pos.loc.x - 3, state.playerEntity.pos.loc.y - 3,  4.9,
+
+            state.playerEntity.pos.loc.x - 3,  state.playerEntity.pos.loc.y - 3,  4.9,
+            beam.beam.targetEntity.pos.loc.x - 3, beam.beam.targetEntity.pos.loc.y - 3,  4.9,
+            beam.beam.targetEntity.pos.loc.x + 3, beam.beam.targetEntity.pos.loc.y + 3,  4.9
+        ] );
+
+        // itemSize = 3 because there are 3 values (components) per vertex
+        geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
+        var material = new MeshBasicMaterial( { color: 0x5fcde4 } );
+
+        beam.beam.mesh.geometry = geometry;
+        beam.beam.mesh.material = material;
+    }
+    else
+    {
+        var vertices = new Float32Array( [] );
+        var geometry = new BufferGeometry();
+        geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
+        beam.beam.mesh.geometry = geometry;
+    }
+
 }
 
 export function healthHUDSystem(ents: readonly Entity[], state: GameState) {
