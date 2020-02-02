@@ -36,7 +36,7 @@ export class GameState extends BaseState {
 
     public ticks = 0;
     public lasteroid = 0;
-    public asteroidDelay = 6;
+    public asteroidDelay = 70;
     public asteroidsCount = 0;
 
     public turnOnHitboxes = false;
@@ -98,7 +98,7 @@ export class GameState extends BaseState {
         player.hitBox.onHit = function(player, other) {
             if (other.hitboxType == HitBoxType.ASTEROID) {
                  // player gets yeeted by an asteroid
-                //player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(11));
+                player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(8));
             }
             if (other.hitboxType == HitBoxType.STATION || other.hitboxType == HitBoxType.STATION_PART){
                 // player bounces off the base
@@ -107,6 +107,17 @@ export class GameState extends BaseState {
 
                 if (player.pos.loc.y > 0) player.vel.positional.setY(Math.abs(player.vel.positional.y));
                 else player.vel.positional.setY(Math.abs(player.vel.positional.y) * -1);
+
+                if (other.hitboxType == HitBoxType.STATION_PART) {
+                    if (other.attachedToBase == false) {
+                        // base piece gets nudged by the player
+                        if (player.pos.loc.x > 0) other.vel.positional.setX(Math.abs(player.vel.positional.x) * -0.5);
+                        else other.vel.positional.setX(Math.abs(player.vel.positional.x) * 0.5);
+
+                        if (player.pos.loc.y > 0) other.vel.positional.setY(Math.abs(player.vel.positional.y) * -0.5);
+                        else other.vel.positional.setY(Math.abs(player.vel.positional.y) * 0.5);
+                    }
+                }
             }
         }
 
@@ -174,7 +185,7 @@ export class GameState extends BaseState {
             ring.hitboxType = HitBoxType.STATION_PART;
             ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
             ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 5.25);
-            ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID, HitBoxType.PLAYER]); // TODO make center smaller than sprite
+            ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID, HitBoxType.PLAYER, HitBoxType.STATION]); // TODO make center smaller than sprite
             ring.vel = initializeVelocity(1, new Vector3(0, 0, 0));
 
             if (entity.flipHitbox) {
@@ -195,6 +206,14 @@ export class GameState extends BaseState {
                     else other.vel.positional.setY(Math.abs(other.vel.positional.y) * -1);
 
                     self.vel.positional.copy(other.vel.positional.clone().multiplyScalar(0.133));
+
+                    self.attachedToBase = false;
+                }
+
+                if (other.hitboxType == HitBoxType.STATION && self.attachedToBase == false) {
+                    self.attachedToBase = true;
+                    self.vel = initializeVelocity(1, new Vector3(0, 0, 0));
+                    self.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
                 }
             }
             this.registerEntity(ring);
@@ -208,7 +227,7 @@ export class GameState extends BaseState {
 
 
         this.spawnEnforcerShip();
-        this.spawnEnforcerShip();
+        //this.spawnEnforcerShip();
     }
 
     public removeEntity(ent: Entity) {

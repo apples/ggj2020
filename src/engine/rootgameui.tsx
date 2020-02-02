@@ -40,7 +40,7 @@ export class Root extends Component<Props, State> {
             hidden: false,
         };
 
-        setInterval(() => this.tick(), 1000);
+        setInterval(() => this.tick(), 1667);
     }
 
     public addClick = (): void => {

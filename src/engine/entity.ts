@@ -11,6 +11,7 @@ import { HitBoxType } from "./enums";
  */
 export class Entity {
      public dead: boolean | undefined;
+     public attachedToBase: boolean;
      public hitboxType: HitBoxType;
      public pos: PositionComponent;
      public vel: VelocityComponent;
