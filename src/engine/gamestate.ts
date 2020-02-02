@@ -1,5 +1,5 @@
-import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer } from "./initializers";
-import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem } from "./coresystems";
+import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer, initializeBehavior } from "./initializers";
+import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem, behaviorSystem } from "./coresystems";
 import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler } from "three";
 import { playAudio, setHitBoxGraphic } from "./helpers";
 import { SequenceTypes, HitBoxType } from "./enums";
@@ -12,6 +12,7 @@ import { createWidget } from "../ui/widget";
 import { layoutWidget } from "../ui/layoutwidget";
 import { renderGameUi, Root } from "./rootgameui";
 import { worldEdgeSystem } from "./gamesystems";
+import { enforcer } from "../behaviors/enforcer";
 
 /**
  * GameState that handles updating of all game-related systems.
@@ -65,6 +66,7 @@ export class GameState extends BaseState {
         this.registerSystem(timerSystem);
         this.registerSystem(positionSystem);
         this.registerSystem(worldEdgeSystem);
+        this.registerSystem(behaviorSystem);
 
         playAudio("./data/audio/Pale_Blue.mp3", 0.3, true);
 
@@ -138,20 +140,14 @@ export class GameState extends BaseState {
             this.registerEntity(ring);
         });
 
-
-        // Set up asteroid entity.
-        let asteroid = new Entity();
-        asteroid.pos = initializePosition(120, 620, 4);
-        asteroid.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
-        asteroid.hitBox = initializeHitBox(asteroid.sprite, HitBoxType.ASTEROID, [HitBoxType.PLAYER, HitBoxType.STATION, HitBoxType.STATION_PART], 0, 0, 0, 0);
-        setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
-        this.registerEntity(asteroid);
-
         // Set up background element
         let stars = new Entity();
         stars.pos = initializePosition(0, 0, 1);
         stars.sprite = initializeSprite("./data/textures/space4096Square.png", this.gameScene, 2);
         this.registerEntity(stars);
+
+
+        this.spawnEnforcerShip();
     }
 
     public update() : void {
@@ -214,5 +210,17 @@ export class GameState extends BaseState {
         asteroid.hitBox = initializeHitBox(asteroid.sprite, HitBoxType.ASTEROID, [HitBoxType.PLAYER, HitBoxType.STATION, HitBoxType.STATION_PART], 0, 0, 0, 0);
         setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
         this.registerEntity(asteroid);
+    }
+
+    public spawnEnforcerShip() {
+        const ship = new Entity();
+        ship.pos = initializePosition(0, 0, 5, new Vector3(0, 1, 0));
+        ship.sprite = initializeSprite("./data/textures/ally1.png", this.gameScene, 3.5);
+        ship.sprite.rotateZ(-Math.PI/2);
+        ship.vel = initializeVelocity(0.4);
+        ship.vel.friction = 0.98;
+        ship.hitBox = initializeHitBox(ship.sprite, HitBoxType.ENFORCER, [], 0, 0, 0, 0);
+        ship.behavior = initializeBehavior(enforcer);
+        this.registerEntity(ship);
     }
 }

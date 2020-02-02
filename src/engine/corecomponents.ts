@@ -6,6 +6,8 @@ import { Entity } from "./entity";
 import { AnimationSchema } from "./engineinterfaces";
 import { HitBoxType, SequenceTypes } from "./enums";
 import { Manifold } from "./commontypes";
+import { BaseState } from "../basestate";
+import { Behavior } from "./behavior";
 
 /**
  * Position component
@@ -68,4 +70,12 @@ export interface AnimationComponent {
 export interface TimerComponent {
     ticks: number;
     ontimeout: () => void;
+}
+
+/**
+ * Behavior Component.
+ */
+export interface BehaviorComponent {
+    root: () => Behavior;
+    current: Behavior;
 }

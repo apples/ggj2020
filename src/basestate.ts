@@ -2,6 +2,10 @@ import { RegistryKeyToSystemMap, RegistryKeyToEntityListMap } from "./frameworki
 import { WebGLRenderer } from "THREE";
 import { Widget } from "./ui/widget";
 
+type BaseEntity = {
+    dead: boolean | undefined;
+};
+
 /**
  * Registry of entities
  * Registry of state systems
@@ -29,7 +33,7 @@ export abstract class BaseState {
     /**
      * Get's an entity list by ecsKey. Will return undefined if a system hasn't been
      * registered under the provided key.
-     * @param ecsKey 
+     * @param ecsKey
      */
     public getEntitiesByKey<E>(ecsKey: keyof E) {
         return this.entityRegistry[ecsKey.toString()] as E[];
@@ -37,9 +41,9 @@ export abstract class BaseState {
 
     /**
      * Removes Entity from each Entity list it is registered to.
-     * @param ent 
+     * @param ent
      */
-    protected removeEntity<E>(ent: E) {
+    protected removeEntity<E extends BaseEntity>(ent: E) {
         // Remove entity from global ent list if registered.
         if (this.entityRegistry["global"].indexOf(ent) !== -1) {
             this.entityRegistry["global"].splice(this.entityRegistry["global"].indexOf(ent), 1);
@@ -51,14 +55,17 @@ export abstract class BaseState {
                 this.entityRegistry[key].splice(this.entityRegistry[key].indexOf(ent), 1);
             }
         });
+
+        // Mark entity as dead.
+        ent.dead = true;
     }
 
     /**
      * Call after setting up an Entity's components. Will add Entity to global registry
      * and every specific registry for each ecsKey component match.
-     * @param ent 
+     * @param ent
      */
-    protected registerEntity<E>(ent: E) {
+    protected registerEntity<E extends BaseEntity>(ent: E) {
         let entityComponents: Array<string> = [];
 
         for (var component in ent) {
@@ -94,13 +101,16 @@ export abstract class BaseState {
         if (this.entityRegistry["global"].indexOf(ent) === -1) {
             this.entityRegistry["global"].push(ent);
         }
+
+        // Mark entity as not dead.
+        ent.dead = false;
     }
 
     /**
      * Should be called at the top of the state's constructor for each system used by the state.
      * Systems registered with provided ecsKeys will be given their own registry. Should provide
      * an ecsKey for systems that aren't shared among many entities.
-     * @param system 
+     * @param system
      * @param ecsKey Optional.
      */
     protected registerSystem<E>(system: (ents: ReadonlyArray<E>, state: BaseState) => void, ecsKey?: keyof E) {

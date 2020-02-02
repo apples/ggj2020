@@ -1,4 +1,4 @@
-import { PositionComponent, VelocityComponent, AnimationComponent, HitBoxComponent, TimerComponent } from "./corecomponents";
+import { PositionComponent, VelocityComponent, AnimationComponent, HitBoxComponent, TimerComponent, BehaviorComponent } from "./corecomponents";
 import { ControlComponent } from "./controlcomponent";
 import { Mesh } from "three";
 
@@ -9,6 +9,7 @@ import { Mesh } from "three";
  * the properties within the component.
  */
 export class Entity {
+     public dead: boolean | undefined;
      public pos: PositionComponent;
      public vel: VelocityComponent;
      public sprite: Mesh;
@@ -16,4 +17,5 @@ export class Entity {
      public control: ControlComponent;
      public hitBox: HitBoxComponent;
      public timer: TimerComponent;
+     public behavior: BehaviorComponent;
 }

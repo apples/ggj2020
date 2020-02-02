@@ -31,6 +31,7 @@ import { GameState } from "./gamestate";
 // TODO: Swap out usage of HTMLAudioElement with web audio API (not started)
 
 loadTextures([
+    "./data/textures/ally1.png",
     "./data/textures/cottage.png",
     "./data/textures/girl.png",
     "./data/textures/msknight.png",
@@ -66,9 +67,9 @@ loadTextures([
 });
 
 /**
- * 
+ *
  * @param canvasContainer Captured Canvas Container Element
- * 
+ *
  * Main function that gets immediately invoked.
  * Only dependecy is the canvas container element. Also triggers the event pump.
  */
@@ -118,7 +119,7 @@ function main(canvasContainer: HTMLElement) {
         currentTime = timeStamp - totalTime;
         totalTime = timeStamp;
         fps = 1 / (currentTime / 1000);
-                
+
         if (stateStack.length > 0) {
             // call render on last element in state stack
             last(stateStack).render(renderer);

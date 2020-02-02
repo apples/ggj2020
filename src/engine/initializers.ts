@@ -18,10 +18,12 @@ import {
     PositionComponent,
     VelocityComponent,
     TimerComponent,
+    BehaviorComponent,
 } from "./corecomponents";
 import { Resources } from "../resourcemanager";
 import { ControlComponent } from "./controlcomponent";
 import { AnimationSchema } from "./engineinterfaces";
+import { Behavior } from "./behavior";
 
 /**
  * Initializes sprites, velocities, animations, etc.
@@ -181,4 +183,17 @@ export function initializeVelocity(acceleration: number, positionalVel?: Vector3
     }
 
     return velocity;
+}
+
+/**
+ * Initializes a behavior.
+ * @param root Root behavior.
+ */
+export function initializeBehavior(root: () => Behavior): BehaviorComponent {
+    const behavior = {
+        root: root,
+        current: undefined,
+    };
+
+    return behavior;
 }

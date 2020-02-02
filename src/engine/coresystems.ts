@@ -5,6 +5,7 @@ import {
 import { Entity } from "./entity";
 import { Resources } from "../resourcemanager";
 import { Rect, Manifold, getManifold, getHitbox } from "./commontypes";
+import { BaseState } from "../basestate";
 
 /**
  * Animation System
@@ -122,4 +123,22 @@ export function timerSystem(ents: ReadonlyArray<Entity>) {
             }
         }
     });
+}
+
+/**
+ * Behavior system.
+ * @param ents
+ */
+export function behaviorSystem(ents: readonly Entity[], state: BaseState) {
+    for (const e of ents) {
+        if (e.behavior) {
+            if (e.behavior.current) {
+                if (e.behavior.current.next({ state, ents, self: e }).done) {
+                    e.behavior.current = undefined;
+                }
+            } else {
+                e.behavior.current = e.behavior.root();
+            }
+        }
+    }
 }

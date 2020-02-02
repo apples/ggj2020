@@ -12,7 +12,8 @@ export const enum HitBoxType {
     ASTEROID,
     BULLET,
     STATION,
-    STATION_PART
+    STATION_PART,
+    ENFORCER,
 }
 
 /**
