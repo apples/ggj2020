@@ -20,12 +20,20 @@ export class GameState extends BaseState {
     public readonly viewWidth = 1280;
     public readonly viewHeight = 720;
 
+    public readonly worldWidth = 1280 * 4;
+    public readonly worldHeight = 720 * 4;
+
     public gameScene: Scene;
     public gameCamera: Camera;
     public uiScene: Scene;
     public uiCamera: Camera;
     public rootWidget: Widget;
     public playerEntity: Entity;
+
+    public ticks = 0;
+    public lasteroid = 0;
+    public asteroidDelay = 60;
+
     constructor(stateStack: BaseState[]) {
         super(stateStack);
         // Set up game scene.
@@ -109,7 +117,13 @@ export class GameState extends BaseState {
     }
 
     public update() : void {
+        ++this.ticks;
         this.runSystems(this);
+
+        if (this.ticks - this.lasteroid >= this.asteroidDelay) {
+            this.lasteroid = this.ticks;
+            this.spawnRandomAsteroid();
+        }
     }
 
     public render(renderer: WebGLRenderer) : void {
@@ -124,5 +138,35 @@ export class GameState extends BaseState {
 
         // Render UI updates.
         layoutWidget(this.rootWidget);
+    }
+
+    public spawnRandomAsteroid() {
+        const angleFromBase = Math.random() * Math.PI * 2;
+
+        const dx = Math.cos(angleFromBase);
+        const dy = Math.sin(angleFromBase);
+
+        const solutions = [
+            -this.worldWidth/2/dx,
+            this.worldWidth/2/dx,
+            -this.worldHeight/2/dy,
+            this.worldHeight/2/dy,
+        ];
+
+        const t = solutions.filter(t => t > 0).sort((a, b) => a - b)[0];
+
+        const x = dx * t;
+        const y = dy * t;
+
+        const trajectory = Math.random() * Math.PI * 2;
+
+        // Set up asteroid entity.
+        let asteroid = new Entity();
+        asteroid.pos = initializePosition(x, y, 4);
+        asteroid.vel = initializeVelocity(1, new Vector3(1, 0, 0).applyEuler(new Euler(0, 0, trajectory)), new Euler(0, 0, 0.125));
+        asteroid.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
+        asteroid.hitBox = initializeHitBox(asteroid.sprite, HitBoxType.ASTEROID, [HitBoxType.PLAYER, HitBoxType.STATION, HitBoxType.STATION_PART], 0, 0, 0, 0);
+        setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
+        this.registerEntity(asteroid);
     }
 }
