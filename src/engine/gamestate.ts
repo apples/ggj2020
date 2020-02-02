@@ -172,6 +172,7 @@ export class GameState extends BaseState {
 
 
         this.spawnEnforcerShip();
+        this.spawnEnforcerShip();
     }
 
     public removeEntity(ent: Entity) {

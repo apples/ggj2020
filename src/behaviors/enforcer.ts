@@ -51,9 +51,13 @@ export function* enforcer(): Behavior {
     let target: Entity = undefined;
 
     while (!target) {
-        const { ents } = yield;
+        const ents: Entity[] = (yield).ents;
 
-        target = ents.find(e => e.hitBox && e.hitBox.collideType === HitBoxType.ASTEROID);
+        const asteroids = ents.filter(e => e.hitBox && e.hitBox.collideType === HitBoxType.ASTEROID);
+
+        if (asteroids.length) {
+            target = asteroids[Math.floor(Math.random() * asteroids.length)];
+        }
     }
 
     let ticks = 0;
