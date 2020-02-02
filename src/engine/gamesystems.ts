@@ -56,7 +56,7 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
         const targets = ents
             .filter(ent => ent.hitBox && [HitBoxType.ENFORCER, HitBoxType.STATION_PART].includes(ent.hitBox.collideType))
             .map(ent => ({ ent: ent, dist: ent.pos.loc.distanceTo(state.playerEntity.pos.loc) }))
-            .filter(({ dist }) => dist <= 400)
+            .filter(({ ent, dist }) => dist <= 400 && !ent.attachedToBase)
             .sort((a, b) => a.dist - b.dist)
             .map(x => x.ent);
 
@@ -94,6 +94,20 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
         switch (beam.beam.targetEntity.hitBox.collideType) {
             case HitBoxType.ENFORCER: {
                 beam.beam.targetEntity.health.value += 10/60;
+                if (beam.beam.targetEntity.health.value > beam.beam.targetEntity.health.maxValue) {
+                    beam.beam.targetEntity.health.value = beam.beam.targetEntity.health.maxValue;
+                }
+                break;
+            }
+            case HitBoxType.STATION_PART: {
+                if (!beam.beam.targetEntity.attachedToBase) {
+                    const p = state.playerEntity.pos.loc;
+                    const t = beam.beam.targetEntity.pos.loc;
+
+                    const pull = t.clone().sub(p).normalize().multiplyScalar(-0.5);
+
+                    beam.beam.targetEntity.vel.positional.add(pull);
+                }
                 break;
             }
         }
