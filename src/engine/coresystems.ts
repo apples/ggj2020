@@ -82,7 +82,7 @@ export function collisionSystem(ents: ReadonlyArray<Entity>) {
             const manifold = getManifold(body.rect, otherBody.rect);
 
             if (manifold.width > 0 && manifold.height > 0) {
-                console.log('hit');
+                // console.log('hit');
                 tryOnHit(body.ent, otherBody.ent, manifold);
                 tryOnHit(otherBody.ent, body.ent, manifold);
             }

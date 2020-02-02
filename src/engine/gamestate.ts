@@ -35,6 +35,9 @@ export class GameState extends BaseState {
     public ticks = 0;
     public lasteroid = 0;
     public asteroidDelay = 60;
+    public asteroidsCount = 0;
+
+    public turnOnHitboxes = false;
 
     constructor(stateStack: BaseState[]) {
         super(stateStack);
@@ -72,8 +75,9 @@ export class GameState extends BaseState {
 
         // Set up player entity.
         let player = new Entity();
+        player.hitboxType = HitBoxType.PLAYER;
         this.playerEntity = player;
-        player.pos = initializePosition(150, 150, 5);
+        player.pos = initializePosition(225, 225, 5);
         player.sprite = initializeSprite("./data/textures/ship2.png", this.gameScene, 3.5);
         player.control = initializeControls();
         player.vel = initializeVelocity(0.4);
@@ -85,57 +89,77 @@ export class GameState extends BaseState {
             // this.gameScene.remove(player.sprite);
             // this.stateStack.pop();
         });
-        player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID], 0, 0, 0, 0);
-        //setHitBoxGraphic(player.sprite, player.hitBox);
-        player.hitBox.onHit = function() {
-            rootComponent.addClick();
-            // TODO // Make this decrease player health
+        player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID, HitBoxType.STATION_PART, HitBoxType.STATION], 0, 0, 0, 0);
+        if (this.turnOnHitboxes) setHitBoxGraphic(player.sprite, player.hitBox);
+        player.hitBox.onHit = function(player, other) {
+            if (other.hitboxType == HitBoxType.ASTEROID) {
+                 // player gets yeeted by an asteroid
+                player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(11));
+            } 
+            if (other.hitboxType == HitBoxType.STATION || other.hitboxType == HitBoxType.STATION_PART){
+                // player bounces off the base
+                if (player.pos.loc.x > 0) player.vel.positional.setX(Math.abs(player.vel.positional.x));
+                else player.vel.positional.setX(Math.abs(player.vel.positional.x) * -1);
+
+                if (player.pos.loc.y > 0) player.vel.positional.setY(Math.abs(player.vel.positional.y));
+                else player.vel.positional.setY(Math.abs(player.vel.positional.y) * -1);
+            }
         }
         this.registerEntity(player);
 
         // Set up space station central hub entity.
         let station = new Entity();
+        station.hitboxType = HitBoxType.STATION;
         station.pos = initializePosition(0, 0, 4);
-        station.sprite = initializeSprite("./data/textures/base3MiddleLarge.png", this.gameScene, 3.5);
+        station.sprite = initializeSprite("./data/textures/base3MiddleLarge.png", this.gameScene, 5.25);
         station.hitBox = initializeHitBox(station.sprite, HitBoxType.STATION, [HitBoxType.ASTEROID], 130, 130, 0, 0);
-        //setHitBoxGraphic(station.sprite, station.hitBox);
-        station.hitBox.onHit = function() {
-            rootComponent.addClick();
-            // TODO // Make this decrease base health + chip off a chunk of armor
+        if (this.turnOnHitboxes) setHitBoxGraphic(station.sprite, station.hitBox);
+        station.hitBox.onHit = function(self, other) {
+            // TODO // If this gets hit by an asteroid, you lose.
         }
         this.registerEntity(station);
 
-        let offset = 116;
+        let offset = 126;
         let ringEntities = [
-            // {x: 440, y: 160, sprite: "base3Corner.png", rotation: new Vector3(-1,0,0)},
-            // {x: 440, y: 360, sprite: "base3Side.png", rotation: new Vector3(-1,0,0)},
-            // {x: 440, y: 560, sprite: "base3Corner.png", rotation: new Vector3(0,1,0)},
-            // {x: 640, y: 160, sprite: "base3Side.png", rotation: new Vector3(0,-1,0)},
-            // {x: 640, y: 560, sprite: "base3Side.png", rotation: new Vector3(0,1,0)},
-            // {x: 840, y: 160, sprite: "base3Corner.png", rotation: new Vector3(0,-1,0)},
-            // {x: 840, y: 360, sprite: "base3Side.png", rotation: new Vector3(1,0,0)},
-            // {x: 840, y: 560, sprite: "base3Corner.png", rotation: new Vector3(1,0,0)},
-
-            {x: -200+offset, y: -200+offset, sprite: "base3Corner.png", rotation: new Vector3(-1,0,0)},
-            {x: -200+offset, y: 0, sprite: "base3Side.png", rotation: new Vector3(-1,0,0)},
-            {x: -200+offset, y: 200-offset, sprite: "base3Corner.png", rotation: new Vector3(0,1,0)},
-            {x: 0, y: -200+offset, sprite: "base3Side.png", rotation: new Vector3(0,-1,0)},
-            {x: 0, y: 200-offset, sprite: "base3Side.png", rotation: new Vector3(0,1,0)},
-            {x: 200-offset, y: -200+offset, sprite: "base3Corner.png", rotation: new Vector3(0,-1,0)},
-            {x: 200-offset, y: 0, sprite: "base3Side.png", rotation: new Vector3(1,0,0)},
-            {x: 200-offset, y: 200-offset, sprite: "base3Corner.png", rotation: new Vector3(1,0,0)},
+            {x: -offset, y: -offset, sprite: "base3Corner.png", rotation: new Vector3(-1,0,0)},
+            {x: -offset, y: 0, sprite: "base3Side.png", rotation: new Vector3(-1,0,0)},
+            {x: -offset, y: offset, sprite: "base3Corner.png", rotation: new Vector3(0,1,0)},
+            {x: 0, y: -offset, sprite: "base3Side.png", rotation: new Vector3(0,-1,0), flipHitbox: true},
+            {x: 0, y: offset, sprite: "base3Side.png", rotation: new Vector3(0,1,0), flipHitbox: true},
+            {x: offset, y: -offset, sprite: "base3Corner.png", rotation: new Vector3(0,-1,0)},
+            {x: offset, y: 0, sprite: "base3Side.png", rotation: new Vector3(1,0,0)},
+            {x: offset, y: offset, sprite: "base3Corner.png", rotation: new Vector3(1,0,0)},
         ]
 
         // Set up station ring piece entities.
         ringEntities.forEach((entity) => {
+            let that=this;
             let ring = new Entity();
+            ring.hitboxType = HitBoxType.STATION_PART;
             ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
-            ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 3.5);
-            ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID]); // TODO make center smaller than sprite
-            //setHitBoxGraphic(ring.sprite, ring.hitBox);
-            ring.hitBox.onHit = function() {
-                rootComponent.addClick();
-                // TODO // Make this decrease base health + chip off a chunk of armor
+            ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 5.25);
+            ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID, HitBoxType.PLAYER]); // TODO make center smaller than sprite
+            ring.vel = initializeVelocity(1, new Vector3(0, 0, 0));
+
+            if (entity.flipHitbox) {
+                let newHeight = ring.hitBox.width;
+                let newWidth = ring.hitBox.height;
+                ring.hitBox.width = newWidth;
+                ring.hitBox.height = newHeight;
+            }
+            
+            if (this.turnOnHitboxes) setHitBoxGraphic(ring.sprite, ring.hitBox);
+            ring.hitBox.onHit = function(self, other) {
+                // Asteroid knocks the station ring loose.
+                if (other.hitboxType == HitBoxType.ASTEROID) {
+                    if (other.pos.loc.x > 0) other.vel.positional.setX(Math.abs(other.vel.positional.x));
+                    else other.vel.positional.setX(Math.abs(other.vel.positional.x) * -1);
+
+                    if (other.pos.loc.y > 0) other.vel.positional.setY(Math.abs(other.vel.positional.y));
+                    else other.vel.positional.setY(Math.abs(other.vel.positional.y) * -1);
+ 
+                    self.vel.positional.copy(other.vel.positional.clone().multiplyScalar(0.133));
+                }
             }
             this.registerEntity(ring);
         });
@@ -204,12 +228,14 @@ export class GameState extends BaseState {
 
         // Set up asteroid entity.
         let asteroid = new Entity();
+        asteroid.hitboxType = HitBoxType.ASTEROID;
         asteroid.pos = initializePosition(x, y, 4, new Vector3(1, 0, 0), true);
         asteroid.vel = initializeVelocity(1, new Vector3(5, 0, 0).applyEuler(new Euler(0, 0, trajectory)), new Euler(0, 0, 0.125));
-        asteroid.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
+        asteroid.sprite = initializeSprite("./data/textures/asteroidCircular.png", this.gameScene, 4);
         asteroid.hitBox = initializeHitBox(asteroid.sprite, HitBoxType.ASTEROID, [HitBoxType.PLAYER, HitBoxType.STATION, HitBoxType.STATION_PART], 0, 0, 0, 0);
-        setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
+        if (this.turnOnHitboxes) setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
         this.registerEntity(asteroid);
+        this.asteroidsCount++;
     }
 
     public spawnEnforcerShip() {
