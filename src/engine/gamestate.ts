@@ -96,7 +96,7 @@ export class GameState extends BaseState {
             // this.gameScene.remove(player.sprite);
             // this.stateStack.pop();
         });
-        player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID, HitBoxType.STATION_PART, HitBoxType.STATION], 0, 0, 0, 0);
+        player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID, HitBoxType.STATION_PART, HitBoxType.STATION, HitBoxType.ENFORCER], 0, 0, 0, 0);
         if (this.turnOnHitboxes) setHitBoxGraphic(player.sprite, player.hitBox);
         player.hitBox.onHit = function(player, other) {
             if (other.hitboxType == HitBoxType.ASTEROID) {
@@ -122,6 +122,12 @@ export class GameState extends BaseState {
                     }
                 }
             }
+            if (other.hitBox.collideType == HitBoxType.ENFORCER) {
+                if (other.dead != true) {
+                    // base piece gets nudged by the player
+                    other.health.value = other.health.maxValue;
+                }
+            }
         }
         player.ouchie = { mesh: undefined };
         player.control.camera = this.gameCamera;
@@ -134,8 +140,9 @@ export class GameState extends BaseState {
         station.sprite = initializeSprite("./data/textures/base3MiddleLarge.png", this.gameScene, 5.25);
         station.hitBox = initializeHitBox(station.sprite, HitBoxType.STATION, [HitBoxType.ASTEROID], 130, 130, 0, 0);
         if (this.turnOnHitboxes) setHitBoxGraphic(station.sprite, station.hitBox);
-        station.hitBox.onHit = function(self, other) {
-            // TODO // If this gets hit by an asteroid, you lose.
+        station.hitBox.onHit = () => {
+            // If this gets hit by an asteroid, you lose.
+           this.pushLoseState();
         }
         this.registerEntity(station);
 
@@ -230,6 +237,12 @@ export class GameState extends BaseState {
 
         this.spawnEnforcerShip();
         //this.spawnEnforcerShip();
+    }
+
+    public pushLoseState = (): void => {
+        //let loseState = new LoseState(this.stateStack, this.rootComponent.state.clicks);
+        this.stateStack.pop();
+        //this.stateStack.push(loseState);
     }
 
     public removeEntity(ent: Entity) {
