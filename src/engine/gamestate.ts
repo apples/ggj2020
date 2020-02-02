@@ -332,7 +332,7 @@ export class GameState extends BaseState {
         ship.vel.friction = 0.98;
         ship.hitBox = initializeHitBox(ship.sprite, HitBoxType.ENFORCER, [HitBoxType.ASTEROID], 0, 0, 0, 0);
         ship.hitBox.onHit = (self, other, _manifold) => {
-            playAudio("./data/audio/SFX_Explosion_Asteroid_Short.wav", 0.3, false);
+            playAudio("./data/audio/SFX_Explosion_Asteroid_Short.wav", 1, false);
             --self.health.value;
             this.removeEntity(other);
         };
