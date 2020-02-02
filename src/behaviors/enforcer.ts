@@ -22,7 +22,7 @@ function moveToTarget(self: Entity, target: Entity) {
 
     if (dist > 500) {
         const forwardVel = self.vel.positional.clone().dot(targetVec.clone().normalize());
-        if (forwardVel < 50) {
+        if (forwardVel < 20) {
             self.vel.positional.add(self.pos.dir.clone());
         }
         self.vel.friction = 0.95;

@@ -1,6 +1,6 @@
 import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer, initializeBeam, initializeBehavior } from "./initializers";
-import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler, BufferGeometry, BufferAttribute, MeshBasicMaterial, Mesh } from "three";
-import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem, behaviorSystem } from "./coresystems";
+import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler, BufferGeometry, BufferAttribute, MeshBasicMaterial, Mesh, PlaneGeometry } from "three";
+import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem, behaviorSystem, healthSystem } from "./coresystems";
 import { playAudio, setHitBoxGraphic } from "./helpers";
 import { SequenceTypes, HitBoxType } from "./enums";
 import { controlSystem } from "./controlsystem";
@@ -36,7 +36,7 @@ export class GameState extends BaseState {
 
     public ticks = 0;
     public lasteroid = 0;
-    public asteroidDelay = 60;
+    public asteroidDelay = 6;
     public asteroidsCount = 0;
 
     public turnOnHitboxes = false;
@@ -73,6 +73,7 @@ export class GameState extends BaseState {
         this.registerSystem(worldEdgeSystem);
         this.registerSystem(beamSystem);
         this.registerSystem(behaviorSystem);
+        this.registerSystem(healthSystem);
 
         playAudio("./data/audio/Pale_Blue.mp3", 0.3, true);
 
@@ -97,7 +98,7 @@ export class GameState extends BaseState {
         player.hitBox.onHit = function(player, other) {
             if (other.hitboxType == HitBoxType.ASTEROID) {
                  // player gets yeeted by an asteroid
-                player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(11));
+                //player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(11));
             }
             if (other.hitboxType == HitBoxType.STATION || other.hitboxType == HitBoxType.STATION_PART){
                 // player bounces off the base
@@ -206,7 +207,12 @@ export class GameState extends BaseState {
 
     public removeEntity(ent: Entity) {
         super.removeEntity(ent);
-        this.gameScene.remove(ent.sprite);
+        if (ent.sprite) {
+            this.gameScene.remove(ent.sprite);
+        }
+        if (ent.health && ent.health.mesh) {
+            this.gameScene.remove(ent.health.mesh);
+        }
     }
 
     public update() : void {
@@ -280,8 +286,22 @@ export class GameState extends BaseState {
         ship.sprite.rotateZ(-Math.PI/2);
         ship.vel = initializeVelocity(0.4);
         ship.vel.friction = 0.98;
-        ship.hitBox = initializeHitBox(ship.sprite, HitBoxType.ENFORCER, [], 0, 0, 0, 0);
+        ship.hitBox = initializeHitBox(ship.sprite, HitBoxType.ENFORCER, [HitBoxType.ASTEROID], 0, 0, 0, 0);
+        ship.hitBox.onHit = (self, other, _manifold) => {
+            --self.health.value;
+            this.removeEntity(other);
+        };
         ship.behavior = initializeBehavior(enforcer);
+        const healthBarGeometry = new PlaneGeometry(200, 20);
+        const healthBarMaterial = new MeshBasicMaterial({ color: '#00ff00' });
+        const healthBarMesh = new Mesh(healthBarGeometry, healthBarMaterial);
+        ship.health = {
+            value: 10,
+            maxValue: 10,
+            mesh: healthBarMesh,
+            onDeath: (self) => this.removeEntity(self),
+        };
+        this.gameScene.add(healthBarMesh);
         this.registerEntity(ship);
     }
 }

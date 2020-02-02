@@ -1,6 +1,7 @@
 import {
     MeshBasicMaterial,
     NearestFilter,
+    PlaneGeometry,
 } from "three";
 import { Entity } from "./entity";
 import { Resources } from "../resourcemanager";
@@ -138,6 +139,31 @@ export function behaviorSystem(ents: readonly Entity[], state: BaseState) {
                 }
             } else {
                 e.behavior.current = e.behavior.root();
+            }
+        }
+    }
+}
+
+export function healthSystem(ents: readonly Entity[]) {
+    for (const ent of ents) {
+        if (ent.health) {
+
+            const barWidth = ent.health.value / ent.health.maxValue * 100;
+
+            const { width } = (ent.health.mesh.geometry as PlaneGeometry).parameters;
+
+            if (width !== barWidth) {
+                ent.health.mesh.geometry = new PlaneGeometry(barWidth, 10);
+            }
+
+            ent.health.mesh.position.set(
+                ent.sprite.position.x,
+                ent.sprite.position.y - 80,
+                ent.sprite.position.z + 1
+            );
+
+            if (ent.health.onDeath && ent.health.value <= 0) {
+                ent.health.onDeath(ent);
             }
         }
     }

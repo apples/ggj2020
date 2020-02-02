@@ -1,6 +1,7 @@
 import {
     Vector3,
     Euler,
+    Mesh,
 } from "three";
 import { Entity } from "./entity";
 import { AnimationSchema } from "./engineinterfaces";
@@ -90,4 +91,14 @@ export interface BeamComponent {
 export interface BehaviorComponent {
     root: () => Behavior;
     current: Behavior;
+}
+
+/**
+ * Health Component.
+ */
+export interface HealthComponent {
+    value: number;
+    maxValue: number;
+    mesh: Mesh;
+    onDeath: (self: Entity) => void;
 }
