@@ -144,7 +144,7 @@ export class GameState extends BaseState {
 
         station.hitBox.onHit = () => {
             // If this gets hit by an asteroid, you lose.
-            playAudio("./data/audio/SFX_Explosion_Long.wav", 0.4, false);
+            playAudio("./data/audio/SFX_Explosion_Long_Short.wav", 0.4, false);
            this.pushLoseState();
         }
         this.registerEntity(station);
@@ -227,8 +227,9 @@ export class GameState extends BaseState {
                     self.attachedToBase = true;
                     self.vel = initializeVelocity(1, new Vector3(0, 0, 0));
                     self.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
+                    playAudio("./data/audio/clickOpen.wav", 0.8, false);
                 }
-                playAudio("./data/audio/SFX_Explosion_Long.wav", 0.4, false);
+                playAudio("./data/audio/SFX_Explosion_Long_Short.wav", 0.4, false);
             }
             this.registerEntity(ring);
         });

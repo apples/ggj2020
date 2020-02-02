@@ -61,6 +61,7 @@ loadTextures([
             "./data/audio/Pale_Blue.mp3",
             "./data/audio/SFX_Bonk2.wav",
             "./data/audio/SFX_Explosion_Long.wav",
+            "./data/audio/SFX_Explosion_Long_Short.wav",
             "./data/audio/SFX_Explosion_Asteroid_Short.wav",
             "./data/audio/Music_InGame_Space.wav",
             "./data/audio/clickOpen.wav",
