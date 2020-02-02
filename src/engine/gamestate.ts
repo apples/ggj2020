@@ -1,6 +1,6 @@
-import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer } from "./initializers";
+import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer, initializeBeam } from "./initializers";
 import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem } from "./coresystems";
-import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler } from "three";
+import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler, LineBasicMaterial, Geometry, Line } from "three";
 import { playAudio, setHitBoxGraphic } from "./helpers";
 import { SequenceTypes, HitBoxType } from "./enums";
 import { controlSystem } from "./controlsystem";
@@ -12,6 +12,7 @@ import { createWidget } from "../ui/widget";
 import { layoutWidget } from "../ui/layoutwidget";
 import { renderGameUi, Root } from "./rootgameui";
 import { worldEdgeSystem } from "./gamesystems";
+import { beamSystem } from "./gamesystems";
 
 /**
  * GameState that handles updating of all game-related systems.
@@ -30,6 +31,7 @@ export class GameState extends BaseState {
     public uiCamera: Camera;
     public rootWidget: Widget;
     public playerEntity: Entity;
+    public BeamEntity: Entity;
 
     public ticks = 0;
     public lasteroid = 0;
@@ -65,6 +67,7 @@ export class GameState extends BaseState {
         this.registerSystem(timerSystem);
         this.registerSystem(positionSystem);
         this.registerSystem(worldEdgeSystem);
+        this.registerSystem(beamSystem);
 
         playAudio("./data/audio/Pale_Blue.mp3", 0.3, true);
 
@@ -103,6 +106,27 @@ export class GameState extends BaseState {
             // TODO // Make this decrease base health + chip off a chunk of armor
         }
         this.registerEntity(station);
+
+        //set up beam entity
+        let beam = new Entity();
+        beam.beam = initializeBeam(this.playerEntity);
+
+        var material = new LineBasicMaterial({
+            color: 0x0000ff
+        });
+        
+        var geometry = new Geometry();
+        geometry.vertices.push(
+            new Vector3( -10, 0, 0 ),
+            new Vector3( 0, 10, 0 ),
+            new Vector3( 10, 0, 0 )
+        );
+        
+        var line = new Line(geometry, material);
+        this.gameScene.add(line);
+
+        this.registerEntity(beam);
+        this.BeamEntity = beam;
 
         let offset = 126;
         let ringEntities = [

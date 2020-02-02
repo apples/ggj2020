@@ -18,10 +18,12 @@ import {
     PositionComponent,
     VelocityComponent,
     TimerComponent,
+    BeamComponent
 } from "./corecomponents";
 import { Resources } from "../resourcemanager";
 import { ControlComponent } from "./controlcomponent";
 import { AnimationSchema } from "./engineinterfaces";
+import { Entity } from "./entity";
 
 /**
  * Initializes sprites, velocities, animations, etc.
@@ -181,4 +183,18 @@ export function initializeVelocity(acceleration: number, positionalVel?: Vector3
     }
 
     return velocity;
+}
+
+/**
+ * 
+ * @param targetE 
+ */
+export function initializeBeam(player: Entity): BeamComponent {
+    return { 
+        targetEntity: null,
+        //basePos: null,
+        baseEntity: player,
+        firing: false,
+        type: 0
+    };
 }
