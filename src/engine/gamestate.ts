@@ -62,10 +62,10 @@ export class GameState extends BaseState {
         let player = new Entity();
         this.playerEntity = player;
         player.pos = initializePosition(150, 150, 5);
-        player.sprite = initializeSprite("./data/textures/msknight.png", this.gameScene, 1);
+        player.sprite = initializeSprite("./data/textures/ship2.png", this.gameScene, 3.5);
         player.control = initializeControls();
-        player.vel = initializeVelocity(1);
-        player.vel.friction = 0.9;
+        player.vel = initializeVelocity(0.4);
+        player.vel.friction = 0.98;
         player.anim = initializeAnimation(SequenceTypes.walk, playerAnim);
         player.timer = initializeTimer(250, () => {
             // this.removeEntity(player);
@@ -74,7 +74,7 @@ export class GameState extends BaseState {
             // this.stateStack.pop();
         });
         player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID], 0, 0, 0, 0);
-        setHitBoxGraphic(player.sprite, player.hitBox);
+        //setHitBoxGraphic(player.sprite, player.hitBox);
         player.hitBox.onHit = function() {
             rootComponent.addClick();
             // TODO // Make this decrease player health
@@ -86,7 +86,7 @@ export class GameState extends BaseState {
         station.pos = initializePosition(640, 360, 4);
         station.sprite = initializeSprite("./data/textures/base3MiddleLarge.png", this.gameScene, 3.5);
         station.hitBox = initializeHitBox(station.sprite, HitBoxType.STATION, [HitBoxType.ASTEROID], 130, 130, 0, 0);
-        setHitBoxGraphic(station.sprite, station.hitBox);
+        //setHitBoxGraphic(station.sprite, station.hitBox);
         station.hitBox.onHit = function() {
             rootComponent.addClick();
             // TODO // Make this decrease base health + chip off a chunk of armor
@@ -120,7 +120,7 @@ export class GameState extends BaseState {
             ring.pos = initializePosition(entity.x, entity.y, 4, entity.rotation);
             ring.sprite = initializeSprite("./data/textures/"+entity.sprite, this.gameScene, 3.5);
             ring.hitBox = initializeHitBox(ring.sprite, HitBoxType.STATION_PART, [HitBoxType.ASTEROID]); // TODO make center smaller than sprite
-            setHitBoxGraphic(ring.sprite, ring.hitBox);
+            //setHitBoxGraphic(ring.sprite, ring.hitBox);
             ring.hitBox.onHit = function() {
                 rootComponent.addClick();
                 // TODO // Make this decrease base health + chip off a chunk of armor
