@@ -85,9 +85,13 @@ export class GameState extends BaseState {
         });
         player.hitBox = initializeHitBox(player.sprite, HitBoxType.PLAYER, [HitBoxType.ASTEROID], 0, 0, 0, 0);
         //setHitBoxGraphic(player.sprite, player.hitBox);
-        player.hitBox.onHit = function() {
+        player.hitBox.onHit = function(other) {
+
             rootComponent.addClick();
             // TODO // Make this decrease player health
+            player.vel = other.vel;
+            player.pos = other.pos;
+            player.control = other.control;
         }
         this.registerEntity(player);
 
@@ -137,15 +141,6 @@ export class GameState extends BaseState {
             }
             this.registerEntity(ring);
         });
-
-
-        // Set up asteroid entity.
-        let asteroid = new Entity();
-        asteroid.pos = initializePosition(120, 620, 4);
-        asteroid.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
-        asteroid.hitBox = initializeHitBox(asteroid.sprite, HitBoxType.ASTEROID, [HitBoxType.PLAYER, HitBoxType.STATION, HitBoxType.STATION_PART], 0, 0, 0, 0);
-        setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
-        this.registerEntity(asteroid);
 
         // Set up background element
         let stars = new Entity();
@@ -210,9 +205,9 @@ export class GameState extends BaseState {
         let asteroid = new Entity();
         asteroid.pos = initializePosition(x, y, 4, new Vector3(1, 0, 0), true);
         asteroid.vel = initializeVelocity(1, new Vector3(5, 0, 0).applyEuler(new Euler(0, 0, trajectory)), new Euler(0, 0, 0.125));
-        asteroid.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
+        asteroid.sprite = initializeSprite("./data/textures/asteroid.png", this.gameScene, 4);
         asteroid.hitBox = initializeHitBox(asteroid.sprite, HitBoxType.ASTEROID, [HitBoxType.PLAYER, HitBoxType.STATION, HitBoxType.STATION_PART], 0, 0, 0, 0);
-        setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
+        //setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
         this.registerEntity(asteroid);
     }
 }
