@@ -11,6 +11,7 @@ import { Widget } from "../ui/widget";
 import { createWidget } from "../ui/widget";
 import { layoutWidget } from "../ui/layoutwidget";
 import { renderGameUi, Root } from "./rootgameui";
+import { worldEdgeSystem } from "./gamesystems";
 
 /**
  * GameState that handles updating of all game-related systems.
@@ -20,8 +21,8 @@ export class GameState extends BaseState {
     public readonly viewWidth = 1280;
     public readonly viewHeight = 720;
 
-    public readonly worldWidth = 1280 * 4;
-    public readonly worldHeight = 720 * 4;
+    public readonly worldWidth = 1280 * 1;
+    public readonly worldHeight = 720 * 1;
 
     public gameScene: Scene;
     public gameCamera: Camera;
@@ -63,6 +64,7 @@ export class GameState extends BaseState {
         this.registerSystem(animationSystem);
         this.registerSystem(timerSystem);
         this.registerSystem(positionSystem);
+        this.registerSystem(worldEdgeSystem);
 
         playAudio("./data/audio/Pale_Blue.mp3", 0.3, true);
 
@@ -91,7 +93,7 @@ export class GameState extends BaseState {
 
         // Set up space station central hub entity.
         let station = new Entity();
-        station.pos = initializePosition(640, 360, 4);
+        station.pos = initializePosition(0, 0, 4);
         station.sprite = initializeSprite("./data/textures/base3MiddleLarge.png", this.gameScene, 3.5);
         station.hitBox = initializeHitBox(station.sprite, HitBoxType.STATION, [HitBoxType.ASTEROID], 130, 130, 0, 0);
         setHitBoxGraphic(station.sprite, station.hitBox);
@@ -112,14 +114,14 @@ export class GameState extends BaseState {
             // {x: 840, y: 360, sprite: "base3Side.png", rotation: new Vector3(1,0,0)},
             // {x: 840, y: 560, sprite: "base3Corner.png", rotation: new Vector3(1,0,0)},
 
-            {x: 440+offset, y: 160+offset, sprite: "base3Corner.png", rotation: new Vector3(-1,0,0)},
-            {x: 440+offset, y: 360, sprite: "base3Side.png", rotation: new Vector3(-1,0,0)},
-            {x: 440+offset, y: 560-offset, sprite: "base3Corner.png", rotation: new Vector3(0,1,0)},
-            {x: 640, y: 160+offset, sprite: "base3Side.png", rotation: new Vector3(0,-1,0)},
-            {x: 640, y: 560-offset, sprite: "base3Side.png", rotation: new Vector3(0,1,0)},
-            {x: 840-offset, y: 160+offset, sprite: "base3Corner.png", rotation: new Vector3(0,-1,0)},
-            {x: 840-offset, y: 360, sprite: "base3Side.png", rotation: new Vector3(1,0,0)},
-            {x: 840-offset, y: 560-offset, sprite: "base3Corner.png", rotation: new Vector3(1,0,0)},
+            {x: -200+offset, y: -200+offset, sprite: "base3Corner.png", rotation: new Vector3(-1,0,0)},
+            {x: -200+offset, y: 0, sprite: "base3Side.png", rotation: new Vector3(-1,0,0)},
+            {x: -200+offset, y: 200-offset, sprite: "base3Corner.png", rotation: new Vector3(0,1,0)},
+            {x: 0, y: -200+offset, sprite: "base3Side.png", rotation: new Vector3(0,-1,0)},
+            {x: 0, y: 200-offset, sprite: "base3Side.png", rotation: new Vector3(0,1,0)},
+            {x: 200-offset, y: -200+offset, sprite: "base3Corner.png", rotation: new Vector3(0,-1,0)},
+            {x: 200-offset, y: 0, sprite: "base3Side.png", rotation: new Vector3(1,0,0)},
+            {x: 200-offset, y: 200-offset, sprite: "base3Corner.png", rotation: new Vector3(1,0,0)},
         ]
 
         // Set up station ring piece entities.
@@ -135,7 +137,7 @@ export class GameState extends BaseState {
             }
             this.registerEntity(ring);
         });
-        
+
 
         // Set up asteroid entity.
         let asteroid = new Entity();
@@ -198,8 +200,8 @@ export class GameState extends BaseState {
 
         // Set up asteroid entity.
         let asteroid = new Entity();
-        asteroid.pos = initializePosition(x, y, 4);
-        asteroid.vel = initializeVelocity(1, new Vector3(1, 0, 0).applyEuler(new Euler(0, 0, trajectory)), new Euler(0, 0, 0.125));
+        asteroid.pos = initializePosition(x, y, 4, new Vector3(1, 0, 0), true);
+        asteroid.vel = initializeVelocity(1, new Vector3(5, 0, 0).applyEuler(new Euler(0, 0, trajectory)), new Euler(0, 0, 0.125));
         asteroid.sprite = initializeSprite("./data/textures/cottage.png", this.gameScene, 4);
         asteroid.hitBox = initializeHitBox(asteroid.sprite, HitBoxType.ASTEROID, [HitBoxType.PLAYER, HitBoxType.STATION, HitBoxType.STATION_PART], 0, 0, 0, 0);
         setHitBoxGraphic(asteroid.sprite, asteroid.hitBox);
