@@ -33,6 +33,7 @@ import { GameState } from "./gamestate";
 loadTextures([
     "./data/textures/ally1.png",
     "./data/textures/cottage.png",
+    "./data/textures/fireball.png",
     "./data/textures/girl.png",
     "./data/textures/msknight.png",
     "./data/textures/snow.png",

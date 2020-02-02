@@ -95,7 +95,7 @@ export class GameState extends BaseState {
             if (other.hitboxType == HitBoxType.ASTEROID) {
                  // player gets yeeted by an asteroid
                 player.vel.positional.copy(other.vel.positional.clone().multiplyScalar(11));
-            } 
+            }
             if (other.hitboxType == HitBoxType.STATION || other.hitboxType == HitBoxType.STATION_PART){
                 // player bounces off the base
                 if (player.pos.loc.x > 0) player.vel.positional.setX(Math.abs(player.vel.positional.x));
@@ -147,7 +147,7 @@ export class GameState extends BaseState {
                 ring.hitBox.width = newWidth;
                 ring.hitBox.height = newHeight;
             }
-            
+
             if (this.turnOnHitboxes) setHitBoxGraphic(ring.sprite, ring.hitBox);
             ring.hitBox.onHit = function(self, other) {
                 // Asteroid knocks the station ring loose.
@@ -157,7 +157,7 @@ export class GameState extends BaseState {
 
                     if (other.pos.loc.y > 0) other.vel.positional.setY(Math.abs(other.vel.positional.y));
                     else other.vel.positional.setY(Math.abs(other.vel.positional.y) * -1);
- 
+
                     self.vel.positional.copy(other.vel.positional.clone().multiplyScalar(0.133));
                 }
             }
@@ -172,6 +172,11 @@ export class GameState extends BaseState {
 
 
         this.spawnEnforcerShip();
+    }
+
+    public removeEntity(ent: Entity) {
+        super.removeEntity(ent);
+        this.gameScene.remove(ent.sprite);
     }
 
     public update() : void {
