@@ -1,5 +1,5 @@
 import { initializeAnimation, initializeControls, initializeHitBox, initializeSprite, initializePosition, initializeVelocity, initializeTimer, initializeBeam, initializeBehavior } from "./initializers";
-import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler, LineBasicMaterial, Geometry, Line } from "three";
+import { Scene, Camera, Color, WebGLRenderer, OrthographicCamera, Vector3, Euler, BufferGeometry, BufferAttribute, MeshBasicMaterial, Mesh } from "three";
 import { positionSystem, collisionSystem, timerSystem, animationSystem, velocitySystem, behaviorSystem } from "./coresystems";
 import { playAudio, setHitBoxGraphic } from "./helpers";
 import { SequenceTypes, HitBoxType } from "./enums";
@@ -126,19 +126,24 @@ export class GameState extends BaseState {
         let beam = new Entity();
         beam.beam = initializeBeam(this.playerEntity);
 
-        var material = new LineBasicMaterial({
-            color: 0x0000ff
-        });
-        
-        var geometry = new Geometry();
-        geometry.vertices.push(
-            new Vector3( -10, 0, 0 ),
-            new Vector3( 0, 10, 0 ),
-            new Vector3( 10, 0, 0 )
-        );
-        
-        var line = new Line(geometry, material);
-        this.gameScene.add(line);
+        var geometry = new BufferGeometry();
+        // create a simple square shape. We duplicate the top left and bottom right
+        // vertices because each vertex needs to appear once per triangle.
+        var vertices = new Float32Array( [
+            -1000.0, -10.0,  4.9,
+            1000.0, -10.0,  4.9,
+            1000.0,  10.0,  4.9,
+
+            1000.0,  10.0,  4.9,
+            -1000.0,  10.0,  4.9,
+            -1000.0, -10.0,  4.9
+        ] );
+
+        // itemSize = 3 because there are 3 values (components) per vertex
+        geometry.addAttribute( 'position', new BufferAttribute( vertices, 3 ) );
+        var material = new MeshBasicMaterial( { color: 0xff0000 } );
+        var mesh = new Mesh( geometry, material );
+        this.gameScene.add(mesh);
 
         this.registerEntity(beam);
         this.BeamEntity = beam;
