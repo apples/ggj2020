@@ -2,6 +2,8 @@ import { Entity } from "./entity";
 import { GameState } from "./gamestate";
 import { Rect, getHitbox, getManifold } from "./commontypes";
 import { BeamComponent } from "./corecomponents";
+import { HitBoxType } from "./enums";
+import { Mesh, Plane, PlaneGeometry, MeshBasicMaterial } from "three";
 
 export function worldEdgeSystem(ents: readonly Entity[], state: GameState) {
     for (const ent of ents) {
@@ -60,9 +62,43 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
                     closest = ent;
                 }
             }
-            
+
         }
 
         beam.beam.targetEntity = closest;
+    }
+}
+
+export function healthHUDSystem(ents: readonly Entity[], state: GameState) {
+    const enforcers = ents
+        .filter(ent => (ent.hitBox && ent.hitBox.collideType === HitBoxType.ENFORCER))
+        .sort((a, b) => a.health.value - b.health.value);
+
+    if (enforcers.length) {
+        const hurtMost = enforcers[0];
+
+        if (hurtMost.health.value / hurtMost.health.maxValue < 0.5) {
+            if (!state.playerEntity.ouchie.mesh) {
+                const geom = new PlaneGeometry(10, 10);
+                const mat = new MeshBasicMaterial({ color: '#ff0000' });
+                state.playerEntity.ouchie.mesh = new Mesh(geom, mat);
+                state.gameScene.add(state.playerEntity.ouchie.mesh);
+            }
+
+            state.playerEntity.ouchie.mesh.position.copy(
+                hurtMost.pos.loc.clone().sub(state.playerEntity.pos.loc).normalize().multiplyScalar(100).add(state.playerEntity.pos.loc)
+            );
+            state.playerEntity.ouchie.mesh.position.z = 5;
+        } else {
+            if (state.playerEntity.ouchie.mesh) {
+                state.gameScene.remove(state.playerEntity.ouchie.mesh);
+                state.playerEntity.ouchie.mesh = undefined;
+            }
+        }
+    } else {
+        if (state.playerEntity.ouchie.mesh) {
+            state.gameScene.remove(state.playerEntity.ouchie.mesh);
+            state.playerEntity.ouchie.mesh = undefined;
+        }
     }
 }

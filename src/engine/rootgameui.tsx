@@ -6,6 +6,7 @@ import { Scene } from "THREE";
 import { Widget } from "../ui/widget";
 import { Component } from "../ui/component";
 import { Test } from "./gameui";
+import { Entity } from "./entity";
 
 /**
  * Root UI element/component object
@@ -28,6 +29,8 @@ interface State {
     clicks: number;
     color: string;
     hidden: boolean;
+    player: Entity;
+    ouchies: Entity[];
 }
 
 export class Root extends Component<Props, State> {
@@ -38,6 +41,8 @@ export class Root extends Component<Props, State> {
             clicks: 0,
             color: "#00FFFF",
             hidden: false,
+            player: undefined,
+            ouchies: [],
         };
 
         setInterval(() => this.tick(), 1000);
@@ -90,6 +95,8 @@ export class Root extends Component<Props, State> {
                 plunge = {this.plunge}
                 addClick = {this.addClick}
                 toggle = {this.toggle}
+                player = {this.state.player}
+                ouchies = {this.state.ouchies}
             />
         )
     }
