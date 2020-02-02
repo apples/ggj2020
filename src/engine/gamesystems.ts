@@ -53,19 +53,14 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
     var closestValue: number = Number.MAX_VALUE;
 
     if(beam && beam.beam.firing){
-        for (const ent of ents) {
-            if(ent.pos && ent.hitBox && ent.hitBox.collideType === HitBoxType.ASTEROID)//filter types?
-            {
-                var distance = ent.pos.loc.distanceTo(state.playerEntity.control.mousePos);
-                if(distance < closestValue){
-                    closestValue = distance;
-                    closest = ent;
-                }
-            }
+        const targets = ents
+            .filter(ent => ent.hitBox && [HitBoxType.ENFORCER, HitBoxType.STATION_PART].includes(ent.hitBox.collideType))
+            .map(ent => ({ ent: ent, dist: ent.pos.loc.distanceTo(state.playerEntity.pos.loc) }))
+            .filter(({ dist }) => dist <= 400)
+            .sort((a, b) => a.dist - b.dist)
+            .map(x => x.ent);
 
-        }
-
-        beam.beam.targetEntity = closest;
+        beam.beam.targetEntity = targets[0];
     }
 
     if(beam.beam.targetEntity && beam.beam.firing) {
@@ -95,6 +90,13 @@ export function beamSystem(ents: readonly Entity[], state: GameState) {
 
         beam.beam.mesh.geometry = geometry;
         beam.beam.mesh.material = material;
+
+        switch (beam.beam.targetEntity.hitBox.collideType) {
+            case HitBoxType.ENFORCER: {
+                beam.beam.targetEntity.health.value += 10/60;
+                break;
+            }
+        }
     }
     else
     {
